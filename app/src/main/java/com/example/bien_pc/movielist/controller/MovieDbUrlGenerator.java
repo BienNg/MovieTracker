@@ -29,7 +29,17 @@ public class MovieDbUrlGenerator {
 
         if(requestObject.getRequest().equals("Popular Movies")){
             result = generatePopularMoviesUrl();
-        }else{
+        }
+        else if(requestObject.getRequest().equals("Comedy Movies")){
+            result = generateComedyMoviesUrl();
+        }
+        else if(requestObject.getRequest().equals("Drama Movies")){
+            result = generateDramaMoviesUrl();
+        }
+        else if(requestObject.getRequest().equals("Horror Movies")){
+            result = generateHorrorMoviesUrl();
+        }
+        else{
             result = "Error: Wrong Request";
         }
 
@@ -41,5 +51,14 @@ public class MovieDbUrlGenerator {
     }
     private String generatePopularMoviesUrl(){
         return URL+"/movie/popular"+API_KEY;
+    }
+    private String generateComedyMoviesUrl(){
+        return URL+"/genre/35/movies"+API_KEY;
+    }
+    private String generateDramaMoviesUrl(){
+        return URL+"/genre/18/movies"+API_KEY;
+    }
+    private String generateHorrorMoviesUrl(){
+        return URL+"/genre/27/movies"+API_KEY;
     }
 }

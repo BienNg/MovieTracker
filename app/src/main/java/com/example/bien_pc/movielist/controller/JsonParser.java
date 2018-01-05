@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * This class handles Json Objects.
+ * This class reads Json Objects and returns the wanted information.
  * <p>
  * Created by Bien-PC on 04.01.2018.
  */
@@ -19,7 +19,12 @@ public class JsonParser {
     private final String TAG = "JsonParser";
     private String jsonString;
     private JSONObject json;
+    private ArrayList<Movie> list;
 
+    /**
+     * Constructor always needs a json string @param s.
+     * @param s
+     */
     public JsonParser(String s) {
         jsonString = s;
         Log.d(TAG, "JsonParser jsonString: " + s);
@@ -37,23 +42,20 @@ public class JsonParser {
      *
      * @return
      */
-    public ArrayList<Movie> getListOfPopularMovies() {
-        ArrayList<Movie> list = new ArrayList<>();
-        Log.d(TAG, "getListOfPopularMovies jsonObject: " + json.toString());
+    public ArrayList<Movie> getList() {
+        list = new ArrayList<>();
+        Log.d(TAG, "getList jsonObject: " + json.toString());
         try {
             for (int i = 0; i < json.getJSONArray("results").length(); i++) {
                 JSONObject movie = json.getJSONArray("results").getJSONObject(i);
                 Movie movieObject = new Movie(movie.getString("title"));
                 movieObject.setPosterPath(movie.getString("poster_path"));
-                Log.d(TAG, "getListOfPopularMovies: poster_path is set: " + movieObject.getPosterPath());
                 list.add(movieObject);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
         return list;
     }
 }

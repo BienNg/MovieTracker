@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,9 +30,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
-    private TextView mTextMessage;
-    private MovieDbUrlGenerator movieDBController;
-    private ArrayList<Movie> popularMovies = new ArrayList<>();
+    ArrayList<ArrayList<Movie>> listOfMovies;
+    private ArrayList<Movie> popularMovies, comedyMovies, dramaMovies, horrorMovies;
     private CategoryAdapter adapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -67,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         //Testing the MovieDB API
         Log.d(TAG, "onCreate: requestOperation starts");
         requestOperation(new RequestObject("Popular Movies"));
-
-
+        requestOperation(new RequestObject("Comedy Movies"));
+        requestOperation(new RequestObject("Drama Movies"));
+        requestOperation(new RequestObject("Horror Movies"));
     }
 
 
@@ -77,7 +76,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setUpRecyclerView(){
 
-        CategoriesGenerator cg = new CategoriesGenerator(popularMovies);
+        listOfMovies = new ArrayList<>();
+        listOfMovies.add(popularMovies);
+        listOfMovies.add(comedyMovies);
+        listOfMovies.add(dramaMovies);
+        listOfMovies.add(horrorMovies);
+
+        CategoriesGenerator cg = new CategoriesGenerator(listOfMovies);
         //Categories List
         ArrayList<Category> categories = cg.generateCategories();
 
@@ -92,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This method gets a list of movies accoording to the @param title.
-     * @param title
+     * This method gets a requestObject which contains the information what request is queued
+     * e.g. List of popular Movies, search for movie title etc.
      */
     private void requestOperation(final RequestObject requestObject){
         class RequestOperation extends AsyncTask<String, Void, String>{
@@ -102,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
             protected String doInBackground(String... strings) {
 
                 // Generating the HTTP URL
-                //final String url = new MovieDbUrlGenerator().generateMovieSearchUrl(title);
                 final String url = new MovieDbUrlGenerator(requestObject).getRequestUrl();
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -118,9 +122,15 @@ public class MainActivity extends AppCompatActivity {
                                 String result = response.toString();
                                 Log.d(TAG, "onResponse: URL: " + url);
                                 Log.d(TAG, "onResponse: " + result);
+                                JsonParser jsonParser = new JsonParser(result);
                                 if(requestObject.getRequest().equals("Popular Movies")){
-                                    JsonParser jsonParser = new JsonParser(result);
-                                    popularMovies = jsonParser.getListOfPopularMovies();
+                                    popularMovies = jsonParser.getList();
+                                }else if (requestObject.getRequest().equals("Comedy Movies")){
+                                    comedyMovies = jsonParser.getList();
+                                }else if (requestObject.getRequest().equals("Drama Movies")){
+                                    dramaMovies = jsonParser.getList();
+                                }else if (requestObject.getRequest().equals("Horror Movies")){
+                                    horrorMovies = jsonParser.getList();
                                 }
                                 setUpRecyclerView();
                             }

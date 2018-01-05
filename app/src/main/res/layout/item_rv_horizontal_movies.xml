@@ -12,13 +12,13 @@
         <TextView
             android:id="@+id/category_title"
             android:text="Category"
+            android:textSize="25sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_horizontal_movies"
             android:layout_width="match_parent"
-            android:layout_marginTop="5dp"
             android:layout_height="wrap_content"
             android:visibility="visible">
         </android.support.v7.widget.RecyclerView>
