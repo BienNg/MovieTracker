@@ -15,9 +15,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.controller.JsonParser;
 import com.example.bien_pc.movielist.controller.MovieDbUrlGenerator;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
+import com.example.bien_pc.movielist.models.Movie;
+import com.example.bien_pc.movielist.models.RequestObject;
 import com.example.bien_pc.movielist.recyclerview.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
     private TextView mTextMessage;
     private MovieDbUrlGenerator movieDBController;
+    private ArrayList<Movie> popularMovies = new ArrayList<>();
+    private CategoryAdapter adapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    requestOperation(new RequestObject("Popular Movies"));
                     return true;
                 case R.id.navigation_dashboard:
                     return true;
@@ -54,25 +60,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Setting up the Navigation View
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //Setting up the RecyclerView
-        setUpRecyclerView();
-
-
         //Testing the MovieDB API
-        Log.d(TAG, "onCreate: getMoviesByTitle starts");
-        getMoviesByTitle("Land");
+        Log.d(TAG, "onCreate: requestOperation starts");
+        requestOperation(new RequestObject("Popular Movies"));
+
+
     }
+
 
     /**
      * This method sets up the RecyclerView
      */
     private void setUpRecyclerView(){
 
-        CategoriesGenerator cg = new CategoriesGenerator();
+        CategoriesGenerator cg = new CategoriesGenerator(popularMovies);
         //Categories List
         ArrayList<Category> categories = cg.generateCategories();
 
@@ -82,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         categoriesRecyclerView.setLayoutManager(llm);
         // nuggetsList is an ArrayList of Custom Objects, in this case  Nugget.class
-        CategoryAdapter adapter = new CategoryAdapter(this, categories);
+        adapter = new CategoryAdapter(this, categories);
         categoriesRecyclerView.setAdapter(adapter);
     }
 
@@ -90,25 +95,34 @@ public class MainActivity extends AppCompatActivity {
      * This method gets a list of movies accoording to the @param title.
      * @param title
      */
-    private void getMoviesByTitle(final String title){
+    private void requestOperation(final RequestObject requestObject){
         class RequestOperation extends AsyncTask<String, Void, String>{
 
             @Override
             protected String doInBackground(String... strings) {
 
                 // Generating the HTTP URL
-                final String url = new MovieDbUrlGenerator().generateGetRequestUrl(title);
+                //final String url = new MovieDbUrlGenerator().generateMovieSearchUrl(title);
+                final String url = new MovieDbUrlGenerator(requestObject).getRequestUrl();
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest
                         (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                            String result;
-
+                            /**
+                             * This is the main part of the method.
+                             * Getting the Json String and pass it on to the JsonParser.
+                             * @param response
+                             */
                             @Override
                             public void onResponse(JSONObject response) {
-                                result = response.toString();
+                                String result = response.toString();
                                 Log.d(TAG, "onResponse: URL: " + url);
                                 Log.d(TAG, "onResponse: " + result);
+                                if(requestObject.getRequest().equals("Popular Movies")){
+                                    JsonParser jsonParser = new JsonParser(result);
+                                    popularMovies = jsonParser.getListOfPopularMovies();
+                                }
+                                setUpRecyclerView();
                             }
 
                         }, new Response.ErrorListener() {

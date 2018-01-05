@@ -2,13 +2,16 @@ package com.example.bien_pc.movielist.recyclerview.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.models.Movie;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,10 +20,14 @@ import java.util.List;
  */
 
 public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    
+    private final String TAG = "HorizontalAdapter";
+    private Context context;
     private List<Movie> mDataList;
     private int mRowIndex = -1;
 
-    public HorizontalAdapter() {
+    public HorizontalAdapter(Context context) {
+        this.context = context;
     }
 
     public void setData(List<Movie> data) {
@@ -33,11 +40,11 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView movieImage;
+        private ImageView movieImage;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            movieImage = (TextView) itemView.findViewById(R.id.image_movie);
+            movieImage = (ImageView) itemView.findViewById(R.id.image_movie);
         }
     }
 
@@ -52,7 +59,22 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, int position) {
         ItemViewHolder holder = (ItemViewHolder) rawHolder;
-        holder.movieImage.setText(mDataList.get(position).getTitle());
+        Log.d(TAG, "onBindViewHolder: Poster URL" + mDataList.get(position).getPosterPath());
+
+        //Setting the image from URL
+        Picasso.with(context).load(mDataList.get(position).getPosterPath()).into(holder.movieImage, new Callback() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "onSuccess: ");
+            }
+
+            @Override
+            public void onError() {
+                Log.d(TAG, "onError: ");
+
+            }
+        });
+
         holder.itemView.setTag(position);
     }
 

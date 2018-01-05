@@ -33,7 +33,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
             title = (TextView) view.findViewById(R.id.category_title);
             horizontalList = (RecyclerView) itemView.findViewById(R.id.rv_horizontal_movies);
             horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            horizontalAdapter = new HorizontalAdapter();
+            horizontalAdapter = new HorizontalAdapter(view.getContext());
             horizontalList.setAdapter(horizontalAdapter);
         }
     }
