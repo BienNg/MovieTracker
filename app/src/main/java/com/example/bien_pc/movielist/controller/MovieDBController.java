@@ -23,7 +23,6 @@ public class MovieDBController {
     private final String URL = "https://api.themoviedb.org/3";
     private final String QUERY_TITLE = "/search/movie?api_key=c9fa182d1bdc69a05cdaf873e0216d82&query=";
     private final String API_KEY = "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
-    private final String POSTER_PATH = "http://image.tmdb.org/t/p/w300";
     private final String TAG = "MovieDBController";
     private RequestObject requestObject;
     private Context mContext;
@@ -36,12 +35,18 @@ public class MovieDBController {
         this.requestObject = requestObject;
     }
 
+
     /**
      * Standard Constructor.
      */
     public MovieDBController(Context context){
         this.mContext = context;
     }
+
+    /**
+     * Empty Constructor
+     */
+    public MovieDBController(){}
 
     /**
      * Returns the correct URL according to the request Object
@@ -115,6 +120,18 @@ public class MovieDBController {
         new RequestOperation().execute();
 
     }
+
+
+    /**
+     * Generates the image url from image path.
+     * @param movieId
+     * @return
+     */
+    public void generateImageUrl(int movieId){
+
+
+    }
+
 
     /**
      * Methods that generate get request urls.

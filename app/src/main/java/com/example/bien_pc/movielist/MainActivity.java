@@ -20,7 +20,7 @@ import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
 import com.example.bien_pc.movielist.models.RequestObject;
-import com.example.bien_pc.movielist.recyclerview.adapters.CategoryAdapter;
+import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.recyclerview.adapters;
+package com.example.bien_pc.movielist.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -69,7 +69,6 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, final int position) {
         final ItemViewHolder holder = (ItemViewHolder) rawHolder;
-        Log.d(TAG, "onBindViewHolder: Poster URL" + mDataList.get(position).getPosterPath());
 
         //Setting the image from URL
         Picasso.with(context).load(mDataList.get(position).getPosterPath()).into(holder.movieImage, new Callback() {

@@ -1,0 +1,14 @@
+
+MovieActiviy:
+	-[X]Titel der activity einstellen
+	-Layout designen
+	- Layout befüllen
+		- Movie Klasse erweitern 
+			- Bilder oben
+			- Titel darunter links, Bewertung rechts davon
+			- Poster darunter, Beschreibung danaben rechts
+
+Bug:
+[MainActivity] 
+- RecyclerView verursacht absturz.
+	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.			

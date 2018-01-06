@@ -16,13 +16,15 @@ import java.util.ArrayList;
  */
 
 public class JsonParser {
+
+    // Attributes
     private final String TAG = "JsonParser";
     private String jsonString;
     private JSONObject json;
     private ArrayList<Movie> list;
 
     /**
-     * Constructor always needs a json string @param s.
+     * Constructor always needs a json string @param s and returns the wanted infromation.
      * @param s
      */
     public JsonParser(String s) {
@@ -79,5 +81,24 @@ public class JsonParser {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * This method returns an list of image urls.
+     * @return
+     */
+    public ArrayList<String> getImageUrls(){
+        ArrayList<String> imageUrls = new ArrayList<>();
+        try {
+            for (int i = 0; i < json.getJSONArray("backdrops").length(); i++) {
+                JSONObject image = json.getJSONArray("backdrops").getJSONObject(i);
+                String imageUrl = "https://image.tmdb.org/t/p/w500" + image.getString("file_path");
+                imageUrls.add(imageUrl);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return imageUrls;
     }
 }
