@@ -1,6 +1,7 @@
 package com.example.bien_pc.movielist.recyclerview.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.bien_pc.movielist.MovieActivity;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.models.Movie;
 import com.squareup.picasso.Callback;
@@ -16,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 /**
+ * This adapter class handles the horizontal recyclerview which contains movies.
+ *
  * Created by Bien-PC on 03.01.2018.
  */
 
@@ -51,14 +55,20 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        View itemView = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
+        View itemView = LayoutInflater.from(context).inflate(R.layout.rv_item_movie, parent, false);
         ItemViewHolder holder = new ItemViewHolder(itemView);
         return holder;
     }
 
+
+    /**
+     * Declares the behaviour appearance of the items.
+     * @param rawHolder
+     * @param position
+     */
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, int position) {
-        ItemViewHolder holder = (ItemViewHolder) rawHolder;
+    public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, final int position) {
+        final ItemViewHolder holder = (ItemViewHolder) rawHolder;
         Log.d(TAG, "onBindViewHolder: Poster URL" + mDataList.get(position).getPosterPath());
 
         //Setting the image from URL
@@ -72,6 +82,16 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             public void onError() {
                 Log.d(TAG, "onError: ");
 
+            }
+        });
+
+        //Setting click listener for the movie item
+        holder.movieImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MovieActivity.class);
+                intent.putExtra("ID", mDataList.get(position).getId());
+                context.startActivity(intent);
             }
         });
 

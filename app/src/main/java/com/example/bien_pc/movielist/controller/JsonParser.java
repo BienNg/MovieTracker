@@ -38,17 +38,17 @@ public class JsonParser {
     }
 
     /**
-     * This method reads the jsonString and returns the movie titles of popular movies.
+     * This method reads the jsonString and returns the movie titles the
+     * wanted list e.g. popular movies, horror movies etc.
      *
      * @return
      */
     public ArrayList<Movie> getList() {
         list = new ArrayList<>();
-        Log.d(TAG, "getList jsonObject: " + json.toString());
         try {
             for (int i = 0; i < json.getJSONArray("results").length(); i++) {
                 JSONObject movie = json.getJSONArray("results").getJSONObject(i);
-                Movie movieObject = new Movie(movie.getString("title"));
+                Movie movieObject = new Movie(movie.getInt("id"),movie.getString("title"));
                 movieObject.setPosterPath(movie.getString("poster_path"));
                 list.add(movieObject);
 
@@ -57,5 +57,27 @@ public class JsonParser {
             e.printStackTrace();
         }
         return list;
+    }
+
+    /**
+     * This reads the movie http url and returns the equivalent movie object.
+     * @return
+     */
+    public Movie getMovie(){
+        Log.d(TAG, "getMovie: started");
+
+        try {
+            // Getting id and title and creating the movie object
+            Log.d(TAG, "getMovie: json = " + json);
+            int id = json.getInt("id");
+            String title = json.getString("title");
+            Movie movie = new Movie(id, title);
+
+            return movie;
+        } catch (JSONException e) {
+            Log.e(TAG, "getMovie: some error idk.");
+            e.printStackTrace();
+            return null;
+        }
     }
 }

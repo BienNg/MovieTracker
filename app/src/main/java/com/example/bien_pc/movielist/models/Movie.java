@@ -13,6 +13,7 @@ public class Movie {
     /**
      * Attributes of a Movie
      */
+    private int id;
     private String title;
     private int year;
     private ArrayList<String> genres;
@@ -51,9 +52,13 @@ public class Movie {
     public void setPosterPath(String posterPath) {
         this.posterPath = "https://image.tmdb.org/t/p/w500"+posterPath;
     }
+    public int getId(){
+        return id;
+    }
 
     //Constructor
-    public Movie(String title){
+    public Movie(int id, String title){
+        this.id = id;
         this.title = title;
     }
 }

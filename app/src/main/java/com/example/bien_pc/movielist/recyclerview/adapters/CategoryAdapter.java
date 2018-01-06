@@ -46,7 +46,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
     }
 
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(mContext).inflate(R.layout.item_rv_horizontal_movies, parent, false);
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.rv_item_horizontal_movies, parent, false);
         return new SimpleViewHolder(view);
     }
 

@@ -15,7 +15,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDbUrlGenerator;
+import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             protected String doInBackground(String... strings) {
 
                 // Generating the HTTP URL
-                final String url = new MovieDbUrlGenerator(requestObject).getRequestUrl();
+                final String url = new MovieDBController(requestObject).getUrl();
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest
                         (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -120,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(JSONObject response) {
                                 String result = response.toString();
-                                Log.d(TAG, "onResponse: URL: " + url);
-                                Log.d(TAG, "onResponse: " + result);
                                 JsonParser jsonParser = new JsonParser(result);
                                 if(requestObject.getRequest().equals("Popular Movies")){
                                     popularMovies = jsonParser.getList();
