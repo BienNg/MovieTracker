@@ -14,10 +14,8 @@ public class Movie {
      * Attributes of a Movie
      */
     private int id;
-    private String title;
-    private String year;
+    private String title, year, posterPath, rating, description;
     private ArrayList<String> genres;
-    private String posterPath;
 
     // List of attributes e.g. Netflix, Amazon Prime
     private ArrayList<String> attributes;
@@ -57,6 +55,18 @@ public class Movie {
     }
     public int getId(){
         return id;
+    }
+    public String getRating() {
+        return rating;
+    }
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     //Constructor

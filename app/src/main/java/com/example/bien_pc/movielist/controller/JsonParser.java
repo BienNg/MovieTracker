@@ -69,6 +69,9 @@ public class JsonParser {
     public Movie getMovie(){
         Log.d(TAG, "getMovie: started");
 
+        /**
+         * Main part in this try block
+         */
         try {
             // Getting id and title and creating the movie object
             int id = json.getInt("id");
@@ -86,7 +89,18 @@ public class JsonParser {
             //Setting year and genre
             movie.setGenres(genres);
             movie.setYear(year);
+
+            //Getting and setting poster image
+            movie.setPosterPath(json.getString("poster_path"));
+
+            //Getting and setting rating
+            movie.setRating(json.getString("vote_average"));
+
+            //Getting and setting movie description
+            movie.setDescription(json.getString("overview"));
+
             return movie;
+
         } catch (JSONException e) {
             Log.e(TAG, "getMovie: some error idk.");
             e.printStackTrace();

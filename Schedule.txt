@@ -2,11 +2,9 @@
 MovieActiviy:
 	-[X]Titel der activity einstellen
 	-Layout designen
-	- Layout befüllen
-		- Movie Klasse erweitern 
-			- Bilder oben
-			- Titel darunter links, Bewertung rechts davon
-			- Poster darunter, Beschreibung danaben rechts
+		- [X]Bilder oben
+		- [X]Titel darunter links, Bewertung rechts davon
+		- [X]Poster darunter, Beschreibung danaben rechts
 
 Bug:
 [MainActivity] 
