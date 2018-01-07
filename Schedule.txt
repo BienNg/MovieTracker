@@ -10,5 +10,5 @@ MovieActiviy:
 
 Bug:
 [MainActivity] 
-- RecyclerView verursacht absturz.
+- [X] RecyclerView verursacht absturz.
 	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.			

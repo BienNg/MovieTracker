@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.bien_pc.movielist.models.Movie;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,11 +71,21 @@ public class JsonParser {
 
         try {
             // Getting id and title and creating the movie object
-            Log.d(TAG, "getMovie: json = " + json);
             int id = json.getInt("id");
             String title = json.getString("title");
             Movie movie = new Movie(id, title);
 
+            //Getting year and genres of the movie
+            String year = json.getString("release_date");
+            ArrayList<String> genres = new ArrayList<>();
+            JSONArray jsonArray = json.getJSONArray("genres");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jo = jsonArray.getJSONObject(i);
+                genres.add(jo.getString("name"));
+            }
+            //Setting year and genre
+            movie.setGenres(genres);
+            movie.setYear(year);
             return movie;
         } catch (JSONException e) {
             Log.e(TAG, "getMovie: some error idk.");

@@ -15,7 +15,7 @@ public class Movie {
      */
     private int id;
     private String title;
-    private int year;
+    private String year;
     private ArrayList<String> genres;
     private String posterPath;
 
@@ -28,14 +28,17 @@ public class Movie {
     public void setTitle(String title) {
         this.title = title;
     }
-    public int getYear() {
+    public String getYear() {
         return year;
     }
-    public void setYear(int year) {
+    public void setYear(String year) {
         this.year = year;
     }
     public ArrayList<String> getGenres() {
         return genres;
+    }
+    public void addGenre(String genre){
+        genres.add(genre);
     }
     public void setGenres(ArrayList<String> genres) {
         this.genres = genres;
