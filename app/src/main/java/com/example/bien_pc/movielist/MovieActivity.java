@@ -18,6 +18,11 @@ import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.models.Movie;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -27,13 +32,15 @@ public class MovieActivity extends AppCompatActivity {
     private static final String TAG = "MovieActivity";
     private static Activity activity;
     private static Context context;
+    private int id;
+    private static String title;
     private FirebaseAuth mAuth;
 
     //Views
     private ViewPager viewPager;
     private ViewpagerAdapter viewpagerAdapter;
     private static TextView textReleaseYear, textGenres, textDescription, textRating;
-    private static ImageView imageRating, imagePoster;
+    private static ImageView imagePoster;
     ImageButton bttnAdd;
 
 
@@ -46,6 +53,9 @@ public class MovieActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Getting Firabase Instance
+        mAuth = FirebaseAuth.getInstance();
+
         // Setting up the Add Button
         bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
         setUpAddButton();
@@ -53,10 +63,9 @@ public class MovieActivity extends AppCompatActivity {
         activity = this;
         context = this;
 
-        mAuth = FirebaseAuth.getInstance();
 
         // Getting the movie id and title
-        int id = getIntent().getIntExtra("ID", 0);
+        id = getIntent().getIntExtra("ID", 0);
 
         // Setting up ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
@@ -68,7 +77,6 @@ public class MovieActivity extends AppCompatActivity {
         textGenres = (TextView) findViewById(R.id.mv_text_genres);
         textDescription = (TextView) findViewById(R.id.mv_text_description);
         textRating = (TextView) findViewById(R.id.mv_text_rating);
-        imageRating = (ImageView) findViewById(R.id.mv_image_rating);
         imagePoster= (ImageView) findViewById(R.id.mv_image_poster);
 
         // MovieDBController gets the movie object via its id and updates the ui
@@ -82,7 +90,7 @@ public class MovieActivity extends AppCompatActivity {
      */
     public static void updateUI(final Movie movie){
         // Set the title of the activity
-        Log.d(TAG, "updateUI: movie title ::: " + movie.getTitle() );
+        title = movie.getTitle();
         activity.setTitle(movie.getTitle());
         // Set the release date of the movie
         textReleaseYear.setText(movie.getYear());
@@ -125,16 +133,44 @@ public class MovieActivity extends AppCompatActivity {
      * - Clicking on Seen should remove the movie id from the firebase database.
      */
     private void setUpAddButton(){
+        // Getting reference to the database
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        // Check if user is logged in
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // Check if user has already seen the movie.
+        // Change icon to seen if yes
+        if(currentUser != null){
+            DatabaseReference databaseReference = database.getReference("movies");
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild(id+"")) {
+                        bttnAdd.setImageResource(R.drawable.ic_seen);
+                        bttnAdd.setTag("seen");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    
+                }
+            });
+        }
+
+
         bttnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: " + bttnAdd.getTag());
                 if(bttnAdd.getTag().equals("add")){
-                    // Check if user is logged in
-                    FirebaseUser currentUser = mAuth.getCurrentUser();
                     if(currentUser != null){
-                        bttnAdd.setImageResource(R.drawable.ic_visibility);
+                        bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
+                        // Add a id to the database
+                        DatabaseReference myRef = database.getReference("movies").child(id+"");
+                        myRef.setValue(title);
                     }else{
                         Intent intent = new Intent(MovieActivity.context, SignIn.class);
                         startActivity(intent);
@@ -142,6 +178,10 @@ public class MovieActivity extends AppCompatActivity {
                 }else{
                     bttnAdd.setImageResource(R.drawable.ic_add);
                     bttnAdd.setTag("add");
+                    // Delete id
+                    DatabaseReference myRef = database.getReference("movies").child(id+"");
+                    myRef.setValue(null);
+
                 }
             }
         });
