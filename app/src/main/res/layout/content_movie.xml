@@ -1,92 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    tools:showIn="@layout/activity_movie"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.bien_pc.movielist.MovieActivity"
-    tools:showIn="@layout/activity_movie">
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager_movie_images"
-        android:layout_width="match_parent"
-        android:layout_marginTop="-1dp"
-        android:layout_height="232dp">
-
-    </android.support.v4.view.ViewPager>
+    tools:context="com.example.bien_pc.movielist.MovieActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp">
-        <TextView
-            android:id="@+id/mv_text_release_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:text="release year"
-            android:textColor="@color/text_color"
-            android:layout_gravity="center_vertical"/>
-        <TextView
-            android:id="@+id/mv_text_genres"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:text="genres"
-            android:textColor="@color/text_color"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager_movie_images"
+            android:layout_width="match_parent"
+            android:layout_height="232dp">
+
+        </android.support.v4.view.ViewPager>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/mv_text_release_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:text="release year"
+                android:textColor="@color/text_color" />
+
+            <TextView
+                android:id="@+id/mv_text_genres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:text="genres"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <ImageView
-                android:id="@+id/mv_image_poster"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
-                />
+            android:orientation="horizontal">
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_horizontal">
+                android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/mv_image_rating"
+                    android:id="@+id/mv_image_poster"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_star" />
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="4dp" />
 
-                <TextView
-                    android:id="@+id/mv_text_rating"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/mv_image_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_star" />
+
+                    <TextView
+                        android:id="@+id/mv_text_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="10" />
+                </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/mv_text_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
-        <TextView
-            android:id="@+id/mv_text_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"/>
+
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
