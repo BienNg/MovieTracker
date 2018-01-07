@@ -89,7 +89,8 @@ public class FragmentHome extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        Log.d(TAG, "onCreate: reached.");
+        //Setting the title
+        getActivity().setTitle("Home");
 
         //Setting up the Recycler View
         setUpRecyclerView(view);
@@ -116,7 +117,7 @@ public class FragmentHome extends Fragment {
         //Categories List
         categoriesWithContent = cg.generateCategories();
 
-        RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.rv_vertical_categories);
+        RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_home_rv_categories);
         // Setting RecyclerView
         categoriesRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());

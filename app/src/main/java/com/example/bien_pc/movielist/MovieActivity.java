@@ -2,17 +2,22 @@ package com.example.bien_pc.movielist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;
 import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.models.Movie;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -22,22 +27,33 @@ public class MovieActivity extends AppCompatActivity {
     private static final String TAG = "MovieActivity";
     private static Activity activity;
     private static Context context;
+    private FirebaseAuth mAuth;
 
     //Views
     private ViewPager viewPager;
     private ViewpagerAdapter viewpagerAdapter;
     private static TextView textReleaseYear, textGenres, textDescription, textRating;
     private static ImageView imageRating, imagePoster;
+    ImageButton bttnAdd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
+
+        // Setting up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Setting up the Add Button
+        bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
+        setUpAddButton();
+
         activity = this;
         context = this;
+
+        mAuth = FirebaseAuth.getInstance();
 
         // Getting the movie id and title
         int id = getIntent().getIntExtra("ID", 0);
@@ -100,5 +116,33 @@ public class MovieActivity extends AppCompatActivity {
 
         // Setting the descripton
         textDescription.setText(movie.getDescription());
+    }
+
+    /**
+     * Sets up the behaviour and appearance of the add button in the Toolbar:
+     * - Clicking on Add should add the movie id to the firebase database.
+     * - Clicking on Seen should remove the movie id from the firebase database.
+     */
+    private void setUpAddButton(){
+        bttnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: " + bttnAdd.getTag());
+                if(bttnAdd.getTag().equals("add")){
+                    // Check if user is logged in
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+                    if(currentUser != null){
+                        bttnAdd.setImageResource(R.drawable.ic_visibility);
+                        bttnAdd.setTag("seen");
+                    }else{
+                        Intent intent = new Intent(MovieActivity.context, SignIn.class);
+                        startActivity(intent);
+                    }
+                }else{
+                    bttnAdd.setImageResource(R.drawable.ic_add);
+                    bttnAdd.setTag("add");
+                }
+            }
+        });
     }
 }

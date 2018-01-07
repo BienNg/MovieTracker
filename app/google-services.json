@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "332312130209",
+    "firebase_url": "https://movielist-6cfc7.firebaseio.com",
+    "project_id": "movielist-6cfc7",
+    "storage_bucket": "movielist-6cfc7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332312130209:android:cb616a377d600434",
+        "android_client_info": {
+          "package_name": "com.example.bien_pc.movielist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332312130209-1la5bp41fea5l314adtm819kmu97r8vo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bien_pc.movielist",
+            "certificate_hash": "1cea7ee92eefaf6c7fe4d69d76306cfaec7b5c54"
+          }
+        },
+        {
+          "client_id": "332312130209-86b9ak1ch2h4f6qg9dutd85vp93a08s6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCX5ORXRo4MioPztF6i8u2RMo9wMuzP4Qc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332312130209-86b9ak1ch2h4f6qg9dutd85vp93a08s6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

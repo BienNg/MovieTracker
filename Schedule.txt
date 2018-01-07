@@ -8,6 +8,9 @@ MovieActiviy:
 
 -Search-Funktion
 -Firebase um Filme zu speichern
+	- Button zum hinzufügen von Filmen
+-MyMovies Activity
+	-[X]Layout designen
 
 Bug:
 [MainActivity] 

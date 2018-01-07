@@ -23,7 +23,9 @@
         <activity
             android:name=".MovieActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".SignIn"></activity>
     </application>
 
 </manifest>

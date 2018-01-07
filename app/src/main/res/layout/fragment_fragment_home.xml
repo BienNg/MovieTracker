@@ -11,7 +11,7 @@
         android:layout_weight="1">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_vertical_categories"
+            android:id="@+id/fm_home_rv_categories"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
