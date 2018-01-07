@@ -6,6 +6,9 @@ MovieActiviy:
 		- [X]Titel darunter links, Bewertung rechts davon
 		- [X]Poster darunter, Beschreibung danaben rechts
 
+-Search-Funktion
+-Firebase um Filme zu speichern
+
 Bug:
 [MainActivity] 
 - [X] RecyclerView verursacht absturz.

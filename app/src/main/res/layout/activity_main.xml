@@ -8,20 +8,14 @@
     android:orientation="vertical"
     tools:context="com.example.bien_pc.movielist.MainActivity">
 
+    <!-- The main content view where fragments are loaded -->
     <FrameLayout
-        android:id="@+id/content"
+        android:id="@+id/flContent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_vertical_categories"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-
-    </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

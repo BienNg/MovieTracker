@@ -1,55 +1,45 @@
 package com.example.bien_pc.movielist;
 
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDBController;
-import com.example.bien_pc.movielist.controller.MySingleton;
-import com.example.bien_pc.movielist.models.Category;
-import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.RequestObject;
-import com.example.bien_pc.movielist.adapters.CategoryAdapter;
-import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
+import com.example.bien_pc.movielist.Fragments.FragmentHome;
+import com.example.bien_pc.movielist.Fragments.FragmentMyMovies;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentHome.OnFragmentInteractionListener{
 
     private final String TAG = "MainActivity";
-    private ArrayList<Movie> popularMovies, comedyMovies, dramaMovies, horrorMovies;
-    private CategoryAdapter adapter;
-    private HashMap<String, ArrayList<Movie>> listOfMovies;
-    private ArrayList<Category> categoriesWithContent;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        // Create a new fragment and specify the fragment to show based on nav item clicked
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    requestOperation(new RequestObject("Popular Movies"));
+                    FragmentHome fragmentHome = new FragmentHome();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.flContent, fragmentHome, "FragmentName");
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_dashboard:
+                    FragmentMyMovies fragmentMyMovies = new FragmentMyMovies();
+                    FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction2.replace(R.id.flContent, fragmentMyMovies, "FragmentName");
+                    fragmentTransaction2.commit();
                     return true;
                 case R.id.navigation_notifications:
                     return true;
             }
+
+
             return false;
         }
 
@@ -64,95 +54,17 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //Setting up the Recycler View
-        setUpRecyclerView();
+        // Start Home Fragment when starting the app
+        FragmentHome fragmentHome = new FragmentHome();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.flContent, fragmentHome, "FragmentName");
+        fragmentTransaction.commit();
 
-        //Testing the MovieDB API
-        Log.d(TAG, "onCreate: requestOperation starts");
-        requestOperation(new RequestObject("Popular Movies"));
-        requestOperation(new RequestObject("Comedy Movies"));
-        requestOperation(new RequestObject("Drama Movies"));
-        requestOperation(new RequestObject("Horror Movies"));
     }
 
 
-    /**
-     * This method sets up the RecyclerView
-     */
-    private void setUpRecyclerView(){
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        listOfMovies = new HashMap<>();
-        listOfMovies.put("Popular Movies", popularMovies);
-        listOfMovies.put("Comedy Movies", comedyMovies);
-        listOfMovies.put("Drama Movies", dramaMovies);
-        listOfMovies.put("Horror Movies", horrorMovies);
-
-        CategoriesGenerator cg = new CategoriesGenerator(listOfMovies);
-        //Categories List
-        categoriesWithContent = cg.generateCategories();
-
-        RecyclerView categoriesRecyclerView = (RecyclerView) findViewById(R.id.rv_vertical_categories);
-        // Setting RecyclerView
-        categoriesRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        categoriesRecyclerView.setLayoutManager(llm);
-        // nuggetsList is an ArrayList of Custom Objects, in this case  Nugget.class
-        adapter = new CategoryAdapter(this, categoriesWithContent);
-        categoriesRecyclerView.setAdapter(adapter);
-    }
-
-    /**
-     * This method gets a requestObject which contains the information what request is queued
-     * e.g. List of popular Movies, search for movie title etc.
-     */
-    private void requestOperation(final RequestObject requestObject){
-        class RequestOperation extends AsyncTask<String, Void, String>{
-
-            @Override
-            protected String doInBackground(String... strings) {
-
-                // Generating the HTTP URL
-                final String url = new MovieDBController(requestObject).getUrl();
-
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                            /**
-                             * This is the main part of the method.
-                             * Getting the Json String and pass it on to the JsonParser.
-                             * @param response
-                             */
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                String result = response.toString();
-                                JsonParser jsonParser = new JsonParser(result);
-                                if(requestObject.getRequest().equals("Popular Movies")){
-                                    popularMovies = jsonParser.getList();
-                                    listOfMovies.put("Popular Movies", popularMovies);
-                                }else if (requestObject.getRequest().equals("Comedy Movies")){
-                                    comedyMovies = jsonParser.getList();
-                                    listOfMovies.put("Comedy Movies", comedyMovies);
-                                }else if (requestObject.getRequest().equals("Drama Movies")){
-                                    dramaMovies = jsonParser.getList();
-                                    listOfMovies.put("Drama Movies", dramaMovies);
-                                }else if (requestObject.getRequest().equals("Horror Movies")){
-                                    horrorMovies = jsonParser.getList();
-                                    listOfMovies.put("Horror Movies", horrorMovies);
-                                }
-                                setUpRecyclerView();
-                            }
-
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                            }
-                        });
-
-                // Access the RequestQueue through your singleton class.
-                MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
-                return "";
-            }
-        }
-        new RequestOperation().execute();
     }
 }

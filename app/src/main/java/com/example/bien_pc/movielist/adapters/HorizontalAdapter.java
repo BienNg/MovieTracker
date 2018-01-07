@@ -15,6 +15,7 @@ import com.example.bien_pc.movielist.models.Movie;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     
     private final String TAG = "HorizontalAdapter";
     private Context context;
-    private List<Movie> mDataList;
+    private List<Movie> mDataList = new ArrayList<>();
     private int mRowIndex = -1;
 
     public HorizontalAdapter(Context context) {
