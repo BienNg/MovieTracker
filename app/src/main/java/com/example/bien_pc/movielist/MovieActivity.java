@@ -82,6 +82,7 @@ public class MovieActivity extends AppCompatActivity {
      */
     public static void updateUI(final Movie movie){
         // Set the title of the activity
+        Log.d(TAG, "updateUI: movie title ::: " + movie.getTitle() );
         activity.setTitle(movie.getTitle());
         // Set the release date of the movie
         textReleaseYear.setText(movie.getYear());
