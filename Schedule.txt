@@ -5,9 +5,12 @@ MovieActiviy:
 		- [X]Bilder oben
 		- [X]Titel darunter links, Bewertung rechts davon
 		- [X]Poster darunter, Beschreibung danaben rechts
+		- Alle Filme der selben Reihe als Vorschläge unter dem Poster anzeigen
+			- RecyclerView 
 
 -Firebase um Filme zu speichern
 	- [X]Button zum hinzufügen von Filmen
+	- Filme für speziell einen Nutzer speichern
 
 -MyMovies Activity
 	-[X]Layout designen
@@ -16,6 +19,5 @@ MovieActiviy:
 -Search-Funktion
 
 Bug:
-[MainActivity] 
-- [X] RecyclerView verursacht absturz.
+- [X] [MainActivity] RecyclerView verursacht absturz.
 	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.			

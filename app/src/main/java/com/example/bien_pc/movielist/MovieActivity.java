@@ -26,6 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class MovieActivity extends AppCompatActivity {
 
     //Attributes
@@ -33,6 +35,7 @@ public class MovieActivity extends AppCompatActivity {
     private static Activity activity;
     private static Context context;
     private int id;
+    private ArrayList<Movie> myMovies;
     private static String title;
     private FirebaseAuth mAuth;
 
@@ -43,11 +46,17 @@ public class MovieActivity extends AppCompatActivity {
     private static ImageView imagePoster;
     ImageButton bttnAdd;
 
+    // RecyclerView Attributes
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
+
+        // Getting the movie id and title
+        id = getIntent().getIntExtra("ID", 0);
 
         // Setting up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,9 +72,8 @@ public class MovieActivity extends AppCompatActivity {
         activity = this;
         context = this;
 
-
-        // Getting the movie id and title
-        id = getIntent().getIntExtra("ID", 0);
+        // Init. Variables
+        myMovies = new ArrayList<>();
 
         // Setting up ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
@@ -138,11 +146,12 @@ public class MovieActivity extends AppCompatActivity {
 
         // Check if user is logged in
         final FirebaseUser currentUser = mAuth.getCurrentUser();
+        String email = currentUser.getEmail();
 
         // Check if user has already seen the movie.
         // Change icon to seen if yes
         if(currentUser != null){
-            DatabaseReference databaseReference = database.getReference("movies");
+            DatabaseReference databaseReference = database.getReference(email).child("movies");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
