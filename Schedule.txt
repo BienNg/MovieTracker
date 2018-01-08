@@ -1,7 +1,7 @@
 
 MovieActiviy:
 	-[X]Titel der activity einstellen
-	-Layout designen
+	-[X]Layout designen
 		- [X]Bilder oben
 		- [X]Titel darunter links, Bewertung rechts davon
 		- [X]Poster darunter, Beschreibung danaben rechts
@@ -10,7 +10,7 @@ MovieActiviy:
 
 -Firebase um Filme zu speichern
 	- [X]Button zum hinzufügen von Filmen
-	- Filme für speziell einen Nutzer speichern
+	- [X]Filme für speziell einen Nutzer speichern
 
 -MyMovies Activity
 	-[X]Layout designen

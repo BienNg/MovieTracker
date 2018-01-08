@@ -115,16 +115,6 @@ public class MovieActivity extends AppCompatActivity {
         title = movie.getTitle();
         activity.setTitle(movie.getTitle());
 
-        // Set Visibility of the views if the information is not given
-        if(viewpagerAdapter.getCount() == 0){
-            viewPager.setVisibility(View.GONE);
-            bttnAdd.setVisibility(View.GONE);
-            layoutRating.setVisibility(View.GONE);
-        }else{
-            viewPager.setVisibility(View.VISIBLE);
-            bttnAdd.setVisibility(View.VISIBLE);
-            layoutRating.setVisibility(View.VISIBLE);
-        }
 
         // Set the release date of the movie
         textReleaseYear.setText(movie.getYear());
@@ -140,7 +130,6 @@ public class MovieActivity extends AppCompatActivity {
         }
         textGenres.setText(genres);
 
-        Log.d(TAG, "updateUI: posterURL ::: " + "" + (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()));
         // Setting poster image if there is a poster url
         Log.d(TAG, "updateUI: posterPath ::: " + movie.getPosterPath());
         if(movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()){
@@ -172,6 +161,16 @@ public class MovieActivity extends AppCompatActivity {
             cardViewRelatedMovies.setVisibility(View.GONE);
         }
 
+        // Set Visibility of the views if the information is not given
+        if(viewpagerAdapter.getCount() == 0){
+            viewPager.setVisibility(View.GONE);
+            bttnAdd.setVisibility(View.GONE);
+            layoutRating.setVisibility(View.GONE);
+        }else{
+            viewPager.setVisibility(View.VISIBLE);
+            bttnAdd.setVisibility(View.VISIBLE);
+            layoutRating.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
