@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.bien_pc.movielist.adapters.HorizontalAdapter;
@@ -43,15 +45,17 @@ public class MovieActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     //Views
-    private ViewPager viewPager;
-    private ViewpagerAdapter viewpagerAdapter;
+    private static ViewPager viewPager;
+    private static ViewpagerAdapter viewpagerAdapter;
     private static TextView textReleaseYear, textGenres, textDescription, textRating;
     private static ImageView imagePoster;
-    ImageButton bttnAdd;
+    private static ImageButton bttnAdd;
+    private static LinearLayout layoutRating;
+    private static CardView cardViewRelatedMovies;
 
     // Variables for the collection RV
-    private  static HorizontalAdapter adapterCollections;
-    private static RecyclerView rvCollection;
+    private  static HorizontalAdapter adapterRelatedMovies;
+    private static RecyclerView rvRelatedMovies;
 
 
 
@@ -85,13 +89,16 @@ public class MovieActivity extends AppCompatActivity {
         viewpagerAdapter = new ViewpagerAdapter(this, id);
         viewPager.setAdapter(viewpagerAdapter);
 
+
         //Init. Views
         textReleaseYear = (TextView) findViewById(R.id.mv_text_release_year);
         textGenres = (TextView) findViewById(R.id.mv_text_genres);
         textDescription = (TextView) findViewById(R.id.mv_text_description);
         textRating = (TextView) findViewById(R.id.mv_text_rating);
         imagePoster= (ImageView) findViewById(R.id.mv_image_poster);
-        rvCollection = (RecyclerView) findViewById(R.id.mv_rv_collection);
+        rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_collection);
+        layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
+        cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
 
 
         // MovieDBController gets the movie object via its id and calls updateUI()
@@ -107,6 +114,18 @@ public class MovieActivity extends AppCompatActivity {
         // Set the title of the activity
         title = movie.getTitle();
         activity.setTitle(movie.getTitle());
+
+        // Set Visibility of the views if the information is not given
+        if(viewpagerAdapter.getCount() == 0){
+            viewPager.setVisibility(View.GONE);
+            bttnAdd.setVisibility(View.GONE);
+            layoutRating.setVisibility(View.GONE);
+        }else{
+            viewPager.setVisibility(View.VISIBLE);
+            bttnAdd.setVisibility(View.VISIBLE);
+            layoutRating.setVisibility(View.VISIBLE);
+        }
+
         // Set the release date of the movie
         textReleaseYear.setText(movie.getYear());
 
@@ -121,19 +140,23 @@ public class MovieActivity extends AppCompatActivity {
         }
         textGenres.setText(genres);
 
-        // Setting poster image
-        Picasso.with(context).load(movie.getPosterPath()).into(imagePoster, new Callback() {
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "onSuccess: poster is set.");
-            }
+        Log.d(TAG, "updateUI: posterURL ::: " + "" + (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()));
+        // Setting poster image if there is a poster url
+        Log.d(TAG, "updateUI: posterPath ::: " + movie.getPosterPath());
+        if(movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()){
+            Picasso.with(context).load(movie.getPosterPath()).into(imagePoster, new Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "onSuccess: poster is set.");
+                }
 
-            @Override
-            public void onError() {
-                Log.d(TAG, "onError: image url ::: " + movie.getPosterPath());
-                Log.d(TAG, "onError: poster not set. Some error idk.");
-            }
-        });
+                @Override
+                public void onError() {
+                    Log.d(TAG, "onError: image url ::: " + movie.getPosterPath());
+                    Log.d(TAG, "onError: poster not set. Some error idk.");
+                }
+            });
+        }
 
         // Setting rating
         textRating.setText(movie.getRating());
@@ -142,8 +165,11 @@ public class MovieActivity extends AppCompatActivity {
         textDescription.setText(movie.getDescription());
 
         if (movie.getCollectionId() != 0){
+            cardViewRelatedMovies.setVisibility(View.VISIBLE);
             MovieDBController controller = new MovieDBController();
             controller.getCollection(movie.getId(), movie.getCollectionId());
+        }else{
+            cardViewRelatedMovies.setVisibility(View.GONE);
         }
 
     }
@@ -213,10 +239,10 @@ public class MovieActivity extends AppCompatActivity {
         collection = list;
 
         // Setting up the Recycler View of the collection
-        rvCollection.setHasFixedSize(true);
+        rvRelatedMovies.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-        rvCollection.setLayoutManager(llm);
-        adapterCollections = new HorizontalAdapter(context,list);
-        rvCollection.setAdapter(adapterCollections);
+        rvRelatedMovies.setLayoutManager(llm);
+        adapterRelatedMovies = new HorizontalAdapter(context,list);
+        rvRelatedMovies.setAdapter(adapterRelatedMovies);
     }
 }

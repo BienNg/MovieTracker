@@ -1,5 +1,7 @@
 package com.example.bien_pc.movielist.models;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -10,12 +12,12 @@ import java.util.ArrayList;
  * This Class represents a Movie.
  */
 public class Movie {
+
+    private final String TAG = "Movie.class";
     /**
      * Attributes of a Movie
      */
     private int id;
-
-
     private int collectionId;
     private String title, year, posterPath, rating, description;
     private ArrayList<String> genres;
@@ -54,7 +56,12 @@ public class Movie {
         return posterPath;
     }
     public void setPosterPath(String posterPath) {
-        this.posterPath = "https://image.tmdb.org/t/p/w500"+posterPath;
+        Log.d(TAG, "setPosterPath: posterPath ::: " + posterPath.length());
+        if(!posterPath.equals("null")) {
+            this.posterPath = "https://image.tmdb.org/t/p/w500" + posterPath;
+        }else{
+            this.posterPath = null;
+        }
     }
     public int getId(){
         return id;

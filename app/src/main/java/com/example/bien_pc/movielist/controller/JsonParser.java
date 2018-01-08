@@ -26,6 +26,7 @@ public class JsonParser {
 
     /**
      * Constructor always needs a json string @param s and returns the wanted infromation.
+     *
      * @param s
      */
     public JsonParser(String s) {
@@ -51,7 +52,7 @@ public class JsonParser {
         try {
             for (int i = 0; i < json.getJSONArray("results").length(); i++) {
                 JSONObject movie = json.getJSONArray("results").getJSONObject(i);
-                Movie movieObject = new Movie(movie.getInt("id"),movie.getString("title"));
+                Movie movieObject = new Movie(movie.getInt("id"), movie.getString("title"));
                 movieObject.setPosterPath(movie.getString("poster_path"));
                 list.add(movieObject);
 
@@ -64,9 +65,10 @@ public class JsonParser {
 
     /**
      * This reads the movie http url and returns the equivalent movie object.
+     *
      * @return
      */
-    public Movie getMovie(){
+    public Movie getMovie() {
         /**
          * Main part in this try block
          */
@@ -96,7 +98,7 @@ public class JsonParser {
             //Getting and setting movie description
             movie.setDescription(json.getString("overview"));
             //Getting collection id if movie is part of a collection
-            if(!json.isNull("belongs_to_collection")){
+            if (!json.isNull("belongs_to_collection")) {
                 movie.setCollectionId(json.getJSONObject("belongs_to_collection").getInt("id"));
             }
             return movie;
@@ -108,7 +110,7 @@ public class JsonParser {
         }
     }
 
-    public ArrayList<Movie> getCollection( int movieId){
+    public ArrayList<Movie> getCollection(int movieId) {
 
 
         /**
@@ -116,27 +118,26 @@ public class JsonParser {
          */
         try {
             // Check if collection exists
-            if(json.has("parts")){
+            if (json.has("parts")) {
                 // Create the collection
                 ArrayList<Movie> collection = new ArrayList<>();
 
                 // Iterating through the JSONArray of the movies and add them to the collection
                 JSONArray arrayOfMovies = json.getJSONArray("parts");
-                Log.d(TAG, "getCollection: arrayOfMovies ::: " + arrayOfMovies);
-                for (int i = 0; i < arrayOfMovies.length() ; i++) {
+                for (int i = 0; i < arrayOfMovies.length(); i++) {
                     // Creating the movie object for every part.
                     int id = arrayOfMovies.getJSONObject(i).getInt("id");
-                    if(id != movieId){
+                    if (id != movieId) {
                         String title = arrayOfMovies.getJSONObject(i).getString("title");
                         String posterPath = arrayOfMovies.getJSONObject(i).getString("poster_path");
                         Movie movie = new Movie(id, title);
                         movie.setPosterPath(posterPath);
                         collection.add(movie);
+
                     }
                 }
-                Log.d(TAG, "getCollection: collection size ::: " + collection);
                 return collection;
-            }else{
+            } else {
                 return null;
             }
 
@@ -145,11 +146,13 @@ public class JsonParser {
             return null;
         }
     }
+
     /**
      * This method returns an list of image urls.
+     *
      * @return
      */
-    public ArrayList<String> getImageUrls(){
+    public ArrayList<String> getImageUrls() {
         ArrayList<String> imageUrls = new ArrayList<>();
         try {
             for (int i = 0; i < json.getJSONArray("backdrops").length(); i++) {

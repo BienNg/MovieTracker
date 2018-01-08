@@ -76,19 +76,21 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, final int position) {
         final ItemViewHolder holder = (ItemViewHolder) rawHolder;
 
-        //Setting the image from URL
-        Picasso.with(context).load(mDataList.get(position).getPosterPath()).into(holder.movieImage, new Callback() {
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "onSuccess: ");
-            }
+        if(mDataList.get(position).getPosterPath() != null){
+            //Setting the image from URL
+            Picasso.with(context).load(mDataList.get(position).getPosterPath()).into(holder.movieImage, new Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "onSuccess: ");
+                }
 
-            @Override
-            public void onError() {
-                Log.d(TAG, "onError: ");
+                @Override
+                public void onError() {
+                    Log.d(TAG, "onError: ");
 
-            }
-        });
+                }
+            });
+        }
 
         //Setting click listener for the movie item
         holder.movieImage.setOnClickListener(new View.OnClickListener() {

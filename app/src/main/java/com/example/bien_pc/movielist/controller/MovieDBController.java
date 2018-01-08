@@ -2,7 +2,6 @@ package com.example.bien_pc.movielist.controller;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -148,7 +147,6 @@ public class MovieDBController {
                                 String result = response.toString();
                                 JsonParser jsonParser = new JsonParser(result);
                                 ArrayList<Movie> list = jsonParser.getCollection(movieId);
-                                Log.d(TAG, "onResponse: collection ::: " + list);
                                 if(list != null){
                                     MovieActivity.updateCollectionRV(list);
                                 }
