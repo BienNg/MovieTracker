@@ -108,7 +108,7 @@ public class JsonParser {
         }
     }
 
-    public ArrayList<Movie> getCollection(){
+    public ArrayList<Movie> getCollection( int movieId){
 
 
         /**
@@ -126,11 +126,13 @@ public class JsonParser {
                 for (int i = 0; i < arrayOfMovies.length() ; i++) {
                     // Creating the movie object for every part.
                     int id = arrayOfMovies.getJSONObject(i).getInt("id");
-                    String title = arrayOfMovies.getJSONObject(i).getString("title");
-                    String posterPath = arrayOfMovies.getJSONObject(i).getString("poster_path");
-                    Movie movie = new Movie(id, title);
-                    movie.setPosterPath(posterPath);
-                    collection.add(movie);
+                    if(id != movieId){
+                        String title = arrayOfMovies.getJSONObject(i).getString("title");
+                        String posterPath = arrayOfMovies.getJSONObject(i).getString("poster_path");
+                        Movie movie = new Movie(id, title);
+                        movie.setPosterPath(posterPath);
+                        collection.add(movie);
+                    }
                 }
                 Log.d(TAG, "getCollection: collection size ::: " + collection);
                 return collection;

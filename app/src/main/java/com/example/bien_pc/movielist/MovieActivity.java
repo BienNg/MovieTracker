@@ -143,7 +143,7 @@ public class MovieActivity extends AppCompatActivity {
 
         if (movie.getCollectionId() != 0){
             MovieDBController controller = new MovieDBController();
-            controller.getCollection(movie.getCollectionId());
+            controller.getCollection(movie.getId(), movie.getCollectionId());
         }
 
     }
@@ -214,7 +214,7 @@ public class MovieActivity extends AppCompatActivity {
 
         // Setting up the Recycler View of the collection
         rvCollection.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(context);
+        LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvCollection.setLayoutManager(llm);
         adapterCollections = new HorizontalAdapter(context,list);
         rvCollection.setAdapter(adapterCollections);

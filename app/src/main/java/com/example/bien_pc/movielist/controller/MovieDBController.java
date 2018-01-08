@@ -124,8 +124,8 @@ public class MovieDBController {
 
     }
 
-    public ArrayList<Movie> getCollection(int id){
-        final String collectionURL = URL + "/collection/" + id + API_KEY;
+    public ArrayList<Movie> getCollection(final int movieId, int collectionId){
+        final String collectionURL = URL + "/collection/" + collectionId + API_KEY;
 
         class RequestOperation extends AsyncTask<String, Void, String> {
 
@@ -147,7 +147,7 @@ public class MovieDBController {
                             public void onResponse(JSONObject response) {
                                 String result = response.toString();
                                 JsonParser jsonParser = new JsonParser(result);
-                                ArrayList<Movie> list = jsonParser.getCollection();
+                                ArrayList<Movie> list = jsonParser.getCollection(movieId);
                                 Log.d(TAG, "onResponse: collection ::: " + list);
                                 if(list != null){
                                     MovieActivity.updateCollectionRV(list);
