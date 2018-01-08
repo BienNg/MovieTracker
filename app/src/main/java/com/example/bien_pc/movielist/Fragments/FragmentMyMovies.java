@@ -1,5 +1,6 @@
 package com.example.bien_pc.movielist.Fragments;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
+import com.example.bien_pc.movielist.SignIn;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.controller.JsonParser;
 import com.example.bien_pc.movielist.controller.MovieDBController;
@@ -25,6 +27,7 @@ import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
 import com.example.bien_pc.movielist.models.RequestObject;
 import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONObject;
 
@@ -32,15 +35,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentMyMovies.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentMyMovies#newInstance} factory method to
- * create an instance of this fragment.
+ * This Fragment shows the movies that the user has seen
  */
 public class FragmentMyMovies extends Fragment{
-
 
     //Variables
     private final String TAG = "FragmentMyMovies";
@@ -54,11 +51,6 @@ public class FragmentMyMovies extends Fragment{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
 
     public FragmentMyMovies() {
         // Required empty public constructor
@@ -85,10 +77,7 @@ public class FragmentMyMovies extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     /**
@@ -103,12 +92,20 @@ public class FragmentMyMovies extends Fragment{
         // Set the title
         getActivity().setTitle("My Movies");
 
+        // Check if user exists
+        // Start sign activity if not
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth == null){
+            Intent intent = new Intent(getContext(), SignIn.class);
+            startActivity(intent);
+        }
+
+
 
         //Setting up the Recycler View
         setUpRecyclerView(view);
 
         //Requesting Movies that fill the RecyclerViews
-        requestOperation(view, new RequestObject("Popular Movies"));
         requestOperation(view, new RequestObject("Comedy Movies"));
         requestOperation(view, new RequestObject("Drama Movies"));
         requestOperation(view, new RequestObject("Horror Movies"));
@@ -198,13 +195,6 @@ public class FragmentMyMovies extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fragment_my_movies, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     /**

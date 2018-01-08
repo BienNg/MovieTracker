@@ -6,11 +6,14 @@ MovieActiviy:
 		- [X]Titel darunter links, Bewertung rechts davon
 		- [X]Poster darunter, Beschreibung danaben rechts
 
--Search-Funktion
 -Firebase um Filme zu speichern
-	- Button zum hinzufügen von Filmen
+	- [X]Button zum hinzufügen von Filmen
+
 -MyMovies Activity
 	-[X]Layout designen
+	-RecyclerViews mit Filmen vom user befüllen
+
+-Search-Funktion
 
 Bug:
 [MainActivity] 
