@@ -146,7 +146,7 @@ public class MovieActivity extends AppCompatActivity {
 
         // Check if user is logged in
         final FirebaseUser currentUser = mAuth.getCurrentUser();
-        String email = currentUser.getEmail();
+        final String email = currentUser.getEmail().replace(".", "(dot)");
 
         // Check if user has already seen the movie.
         // Change icon to seen if yes
@@ -178,7 +178,7 @@ public class MovieActivity extends AppCompatActivity {
                         bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
                         // Add a id to the database
-                        DatabaseReference myRef = database.getReference("movies").child(id+"");
+                        DatabaseReference myRef = database.getReference(email).child("movies").child(id+"");
                         myRef.setValue(title);
                     }else{
                         Intent intent = new Intent(MovieActivity.context, SignIn.class);
@@ -188,7 +188,7 @@ public class MovieActivity extends AppCompatActivity {
                     bttnAdd.setImageResource(R.drawable.ic_add);
                     bttnAdd.setTag("add");
                     // Delete id
-                    DatabaseReference myRef = database.getReference("movies").child(id+"");
+                    DatabaseReference myRef = database.getReference(email).child("movies").child(id+"");
                     myRef.setValue(null);
 
                 }

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MovieTracker.iml" filepath="$PROJECT_DIR$/MovieTracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MovieList.iml" filepath="$PROJECT_DIR$/MovieList.iml" />
+      <module fileurl="file://C:\Users\Bien-PC\Desktop\Git\MovieList\MovieTracker.iml" filepath="C:\Users\Bien-PC\Desktop\Git\MovieList\MovieTracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
