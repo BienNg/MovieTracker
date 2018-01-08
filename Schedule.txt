@@ -5,8 +5,8 @@ MovieActiviy:
 		- [X]Bilder oben
 		- [X]Titel darunter links, Bewertung rechts davon
 		- [X]Poster darunter, Beschreibung danaben rechts
-		- Alle Filme der selben Reihe als Vorschläge unter dem Poster anzeigen
-			- RecyclerView 
+		- [X]Alle Filme der selben Reihe als Vorschläge unter dem Poster anzeigen
+
 
 -Firebase um Filme zu speichern
 	- [X]Button zum hinzufügen von Filmen
