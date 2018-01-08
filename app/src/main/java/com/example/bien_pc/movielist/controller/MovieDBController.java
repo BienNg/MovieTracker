@@ -2,6 +2,7 @@ package com.example.bien_pc.movielist.controller;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -12,6 +13,8 @@ import com.example.bien_pc.movielist.models.Movie;
 import com.example.bien_pc.movielist.models.RequestObject;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * This class handles the API for the Movie Database.
@@ -75,7 +78,7 @@ public class MovieDBController {
     }
 
     /**
-     * Returns the title by id.
+     * Gets movie by id and updates the MovieActivity UI.
      * @param id
      * @return
      */
@@ -121,21 +124,60 @@ public class MovieDBController {
 
     }
 
+    public ArrayList<Movie> getCollection(int id){
+        final String collectionURL = URL + "/collection/" + id + API_KEY;
+
+        class RequestOperation extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... strings) {
+
+                /**
+                 * Main Part: Getting the collection
+                 */
+                final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                        (Request.Method.GET, collectionURL, null, new Response.Listener<JSONObject>() {
+
+                            /**
+                             * This is the main part of the method.
+                             * Getting the Json String and pass it on to the JsonParser.
+                             * @param response
+                             */
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                String result = response.toString();
+                                JsonParser jsonParser = new JsonParser(result);
+                                ArrayList<Movie> list = jsonParser.getCollection();
+                                Log.d(TAG, "onResponse: collection ::: " + list);
+                                if(list != null){
+                                    MovieActivity.updateCollectionRV(list);
+                                }
+                            }
+
+                        }, new Response.ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                            }
+                        });
+
+                // Access the RequestQueue through your singleton class.
+                MySingleton.getInstance(mContext).addToRequestQueue(jsObjRequest);
+                return "";
+            }
+        }
+        new RequestOperation().execute();
+
+        return null;
+    }
 
     /**
-     * Generates the image url from image path.
-     * @param movieId
-     * @return
+     * Methods that generate get request urls.
      */
     public void generateImageUrl(int movieId){
 
 
     }
-
-
-    /**
-     * Methods that generate get request urls.
-     */
     private String generateMovieSearchUrl(String title){
         return URL + QUERY_TITLE +title;
     }

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bien_pc.movielist.adapters.HorizontalAdapter;
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;
 import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.models.Movie;
@@ -35,7 +38,7 @@ public class MovieActivity extends AppCompatActivity {
     private static Activity activity;
     private static Context context;
     private int id;
-    private ArrayList<Movie> myMovies;
+    private static ArrayList<Movie> collection;
     private static String title;
     private FirebaseAuth mAuth;
 
@@ -46,7 +49,9 @@ public class MovieActivity extends AppCompatActivity {
     private static ImageView imagePoster;
     ImageButton bttnAdd;
 
-    // RecyclerView Attributes
+    // Variables for the collection RV
+    private  static HorizontalAdapter adapterCollections;
+    private static RecyclerView rvCollection;
 
 
 
@@ -73,7 +78,7 @@ public class MovieActivity extends AppCompatActivity {
         context = this;
 
         // Init. Variables
-        myMovies = new ArrayList<>();
+        collection = new ArrayList<>();
 
         // Setting up ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
@@ -86,8 +91,10 @@ public class MovieActivity extends AppCompatActivity {
         textDescription = (TextView) findViewById(R.id.mv_text_description);
         textRating = (TextView) findViewById(R.id.mv_text_rating);
         imagePoster= (ImageView) findViewById(R.id.mv_image_poster);
+        rvCollection = (RecyclerView) findViewById(R.id.mv_rv_collection);
 
-        // MovieDBController gets the movie object via its id and updates the ui
+
+        // MovieDBController gets the movie object via its id and calls updateUI()
         MovieDBController movieDBController = new MovieDBController(this);
         movieDBController.getMovieById(id);
     }
@@ -133,6 +140,12 @@ public class MovieActivity extends AppCompatActivity {
 
         // Setting the descripton
         textDescription.setText(movie.getDescription());
+
+        if (movie.getCollectionId() != 0){
+            MovieDBController controller = new MovieDBController();
+            controller.getCollection(movie.getCollectionId());
+        }
+
     }
 
     /**
@@ -194,5 +207,16 @@ public class MovieActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public static void updateCollectionRV(ArrayList<Movie> list){
+        collection = list;
+
+        // Setting up the Recycler View of the collection
+        rvCollection.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(context);
+        rvCollection.setLayoutManager(llm);
+        adapterCollections = new HorizontalAdapter(context,list);
+        rvCollection.setAdapter(adapterCollections);
     }
 }

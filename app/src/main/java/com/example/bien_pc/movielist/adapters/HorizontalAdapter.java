@@ -35,6 +35,11 @@ public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.context = context;
     }
 
+    public HorizontalAdapter(Context context, ArrayList<Movie> movies) {
+        this.context = context;
+        mDataList = movies;
+    }
+
     public void setData(List<Movie> data) {
         mDataList = data;
     }

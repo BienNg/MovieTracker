@@ -67,8 +67,6 @@ public class JsonParser {
      * @return
      */
     public Movie getMovie(){
-        Log.d(TAG, "getMovie: started");
-
         /**
          * Main part in this try block
          */
@@ -95,10 +93,12 @@ public class JsonParser {
 
             //Getting and setting rating
             movie.setRating(json.getString("vote_average"));
-
             //Getting and setting movie description
             movie.setDescription(json.getString("overview"));
-
+            //Getting collection id if movie is part of a collection
+            if(!json.isNull("belongs_to_collection")){
+                movie.setCollectionId(json.getJSONObject("belongs_to_collection").getInt("id"));
+            }
             return movie;
 
         } catch (JSONException e) {
@@ -108,6 +108,41 @@ public class JsonParser {
         }
     }
 
+    public ArrayList<Movie> getCollection(){
+
+
+        /**
+         * Main part in this try block
+         */
+        try {
+            // Check if collection exists
+            if(json.has("parts")){
+                // Create the collection
+                ArrayList<Movie> collection = new ArrayList<>();
+
+                // Iterating through the JSONArray of the movies and add them to the collection
+                JSONArray arrayOfMovies = json.getJSONArray("parts");
+                Log.d(TAG, "getCollection: arrayOfMovies ::: " + arrayOfMovies);
+                for (int i = 0; i < arrayOfMovies.length() ; i++) {
+                    // Creating the movie object for every part.
+                    int id = arrayOfMovies.getJSONObject(i).getInt("id");
+                    String title = arrayOfMovies.getJSONObject(i).getString("title");
+                    String posterPath = arrayOfMovies.getJSONObject(i).getString("poster_path");
+                    Movie movie = new Movie(id, title);
+                    movie.setPosterPath(posterPath);
+                    collection.add(movie);
+                }
+                Log.d(TAG, "getCollection: collection size ::: " + collection);
+                return collection;
+            }else{
+                return null;
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     /**
      * This method returns an list of image urls.
      * @return

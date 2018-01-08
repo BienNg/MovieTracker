@@ -14,6 +14,9 @@ public class Movie {
      * Attributes of a Movie
      */
     private int id;
+
+
+    private int collectionId;
     private String title, year, posterPath, rating, description;
     private ArrayList<String> genres;
 
@@ -67,6 +70,12 @@ public class Movie {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public int getCollectionId() {
+        return collectionId;
+    }
+    public void setCollectionId(int collectionId) {
+        this.collectionId = collectionId;
     }
 
     //Constructor

@@ -8,8 +8,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.example.bien_pc.movielist.Fragments.FragmentHome;
-import com.example.bien_pc.movielist.Fragments.FragmentMyMovies;
+import com.example.bien_pc.movielist.fragments.FragmentHome;
+import com.example.bien_pc.movielist.fragments.FragmentMyMovies;
 
 public class MainActivity extends AppCompatActivity implements FragmentHome.OnFragmentInteractionListener{
 

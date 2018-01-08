@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.Fragments;
+package com.example.bien_pc.movielist.fragments;
 
 import android.content.Intent;
 import android.net.Uri;

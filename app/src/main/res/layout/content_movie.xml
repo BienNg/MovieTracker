@@ -104,7 +104,7 @@
             android:layout_weight="1">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/mv_rv_categories"
+                android:id="@+id/mv_rv_collection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
