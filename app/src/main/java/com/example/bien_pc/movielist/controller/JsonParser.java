@@ -80,6 +80,7 @@ public class JsonParser {
 
             //Getting year and genres of the movie
             String year = json.getString("release_date");
+
             ArrayList<String> genres = new ArrayList<>();
             JSONArray jsonArray = json.getJSONArray("genres");
             for (int i = 0; i < jsonArray.length(); i++) {

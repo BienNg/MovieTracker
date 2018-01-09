@@ -2,7 +2,6 @@ package com.example.bien_pc.movielist.fragments;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,9 +24,14 @@ import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.RequestObject;
 import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -37,14 +41,13 @@ import java.util.HashMap;
 /**
  * This Fragment shows the movies that the user has seen
  */
-public class FragmentMyMovies extends Fragment{
+public class FragmentMyMovies extends Fragment {
 
     //Variables
     private final String TAG = "FragmentMyMovies";
-    private ArrayList<Movie> comedyMovies, dramaMovies, horrorMovies;
+    private ArrayList<Movie> mySeenMovies = new ArrayList<>();
     private CategoryAdapter adapter;
     private HashMap<String, ArrayList<Movie>> listOfMovies;
-    private ArrayList<Category> categoriesWithContent;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,11 +80,11 @@ public class FragmentMyMovies extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     /**
      * Setting the views of the Fragment.
+     *
      * @param view
      * @param savedInstanceState
      */
@@ -95,99 +98,106 @@ public class FragmentMyMovies extends Fragment{
         // Check if user exists
         // Start sign activity if not
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth == null){
+        if (mAuth.getCurrentUser() == null) {
+            Log.d(TAG, "onViewCreated: user is null");
             Intent intent = new Intent(getContext(), SignIn.class);
             startActivity(intent);
+        } else {
+
+            //TEST TODO delete
+            updateRecyclerUI(view);
         }
 
-
-
-        //Setting up the Recycler View
-        setUpRecyclerView(view);
-
-        //Requesting Movies that fill the RecyclerViews
-        requestOperation(view, new RequestObject("Comedy Movies"));
-        requestOperation(view, new RequestObject("Drama Movies"));
-        requestOperation(view, new RequestObject("Horror Movies"));
     }
 
     /**
      * This method sets up the RecyclerView
      */
-    private void setUpRecyclerView(View view){
-        Log.d(TAG, "setUpRecyclerView: reached.");
-        listOfMovies = new HashMap<>();
-        listOfMovies.put("Comedy Movies", comedyMovies);
-        listOfMovies.put("Drama Movies", dramaMovies);
-        listOfMovies.put("Horror Movies", horrorMovies);
+    private void setUpRecyclerView(View view) {
+        String[] categories = {"Comedy", "Drama", "Horror"};
+
+
 
         CategoriesGenerator cg = new CategoriesGenerator(listOfMovies);
         //Categories List
-        categoriesWithContent = cg.generateCategories();
+        ArrayList<Category> categoriesWithContent = cg.generateCategories();
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_mymovies_rv_categories);
         // Setting RecyclerView
         categoriesRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
         categoriesRecyclerView.setLayoutManager(llm);
         // nuggetsList is an ArrayList of Custom Objects, in this case  Nugget.class
         adapter = new CategoryAdapter(getContext(), categoriesWithContent);
         categoriesRecyclerView.setAdapter(adapter);
     }
 
-    /**
-     * This method gets a requestObject which contains the information what request is queued
-     * e.g. List of popular Movies, search for movie title etc.
-     */
-    private void requestOperation(final View view, final RequestObject requestObject){
-        Log.d(TAG, "requestOperation: reached.");
-        class RequestOperation extends AsyncTask<String, Void, String> {
+    private void updateRecyclerUI(final View view) {
+        // Init. movies of the user
+        ArrayList<Movie> moviesOfUser = new ArrayList<>();
+        final ArrayList<String> idOfMovies = new ArrayList<>();
+
+        // Init. Firebase Database
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String email = currentUser.getEmail().replace(".", "(dot)");
+        DatabaseReference databaseReference = database.getReference(email).child("movies");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String id = snapshot.getKey();
+                    idOfMovies.add(id);
+                }
+                fillMySeenMoviesList(idOfMovies, view);
+            }
 
             @Override
-            protected String doInBackground(String... strings) {
+            public void onCancelled(DatabaseError databaseError) {
 
-                // Generating the HTTP URL
-                final String url = new MovieDBController(requestObject).getUrl();
-
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                            /**
-                             * This is the main part of the method.
-                             * Getting the Json String and pass it on to the JsonParser.
-                             * @param response
-                             */
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                String result = response.toString();
-                                JsonParser jsonParser = new JsonParser(result);
-                                if (requestObject.getRequest().equals("Comedy Movies")){
-                                    comedyMovies = jsonParser.getList();
-                                    listOfMovies.put("Comedy Movies", comedyMovies);
-                                }else if (requestObject.getRequest().equals("Drama Movies")){
-                                    dramaMovies = jsonParser.getList();
-                                    listOfMovies.put("Drama Movies", dramaMovies);
-                                }else if (requestObject.getRequest().equals("Horror Movies")){
-                                    horrorMovies = jsonParser.getList();
-                                    listOfMovies.put("Horror Movies", horrorMovies);
-                                }
-                                setUpRecyclerView(view);
-                            }
-
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                            }
-                        });
-
-                // Access the RequestQueue through your singleton class.
-                MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
-                return "";
             }
-        }
-        new RequestOperation().execute();
+        });
     }
 
+    private void fillMySeenMoviesList(final ArrayList<String> idOfMovies, final View view){
+
+        for (String id : idOfMovies) {
+            MovieDBController movieDBController = new MovieDBController();
+            final String movieUrl = movieDBController.getURL() + "/movie/" + id + movieDBController.getAPI_KEY();
+            final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
+
+                        /**
+                         * This is the main part of the method.
+                         * Getting the Json String and pass it on to the JsonParser.
+                         *
+                         * @param response
+                         */
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            String result = response.toString();
+                            JsonParser jsonParser = new JsonParser(result);
+                            Movie movie = jsonParser.getMovie();
+                            mySeenMovies.add(movie);
+                            Log.d(TAG, "onResponse: mySeenMovies size ::: " + mySeenMovies.size());
+                            if(mySeenMovies.size() ==  idOfMovies.size()){
+                                setUpRecyclerView(view);
+                            }
+                        }
+
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                        }
+                    });
+            // Access the RequestQueue through your singleton class.
+            MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjRequest);
+        }
+
+
+    }
 
 
     @Override

@@ -103,7 +103,7 @@ public class MovieActivity extends AppCompatActivity {
 
         // MovieDBController gets the movie object via its id and calls updateUI()
         MovieDBController movieDBController = new MovieDBController(this);
-        movieDBController.getMovieById(id);
+        movieDBController.updateMovieActivityUI(id);
     }
 
     /**

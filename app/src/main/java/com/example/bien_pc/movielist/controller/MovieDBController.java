@@ -26,6 +26,15 @@ public class MovieDBController {
     private final String QUERY_TITLE = "/search/movie?api_key=c9fa182d1bdc69a05cdaf873e0216d82&query=";
     private final String API_KEY = "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
     private final String TAG = "MovieDBController";
+
+    public String getURL() {
+        return URL;
+    }
+
+    public String getAPI_KEY() {
+        return API_KEY;
+    }
+
     private RequestObject requestObject;
     private Context mContext;
 
@@ -68,8 +77,7 @@ public class MovieDBController {
         }
         else if(requestObject.getRequest().equals("Horror Movies")){
             result = generateHorrorMoviesUrl();
-        }
-        else{
+        }else{
             result = "Error: Wrong Request";
         }
 
@@ -81,7 +89,7 @@ public class MovieDBController {
      * @param id
      * @return
      */
-    public void getMovieById(int id){
+    public void updateMovieActivityUI(int id){
 
         // Creating the http url for the movie
         final String movieUrl = URL + "/movie/" + id + API_KEY;
