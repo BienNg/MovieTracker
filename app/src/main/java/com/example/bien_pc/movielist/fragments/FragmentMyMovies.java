@@ -106,7 +106,6 @@ public class FragmentMyMovies extends Fragment {
             //TEST TODO delete
             updateRecyclerUI(view);
         }
-
     }
 
     /**
@@ -136,9 +135,15 @@ public class FragmentMyMovies extends Fragment {
 
         // Adding the categoires to a list
         ArrayList<Category> categoriesWithContent = new ArrayList<>();
-        categoriesWithContent.add(new Category("Comedy", comedyMovies));
-        categoriesWithContent.add(new Category("Drama", dramaMovies));
-        categoriesWithContent.add(new Category("Horror", horrorMovies));
+        if(comedyMovies.size() > 0){
+            categoriesWithContent.add(new Category("Comedy", comedyMovies));
+        }
+        if(dramaMovies.size() > 0){
+            categoriesWithContent.add(new Category("Drama", dramaMovies));
+        }
+        if(categoriesWithContent.size() > 0){
+            categoriesWithContent.add(new Category("Horror", horrorMovies));
+        }
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_mymovies_rv_categories);
         // Setting RecyclerView

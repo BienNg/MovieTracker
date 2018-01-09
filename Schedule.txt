@@ -14,8 +14,7 @@ MovieActiviy:
 
 -MyMovies Activity
 	-[X]Layout designen
-	-RecyclerViews mit Filmen vom user befüllen
-		- mySeenMovies in einzelene Kategorien unterteilen.
+	-[X]RecyclerViews mit Filmen vom user befüllen
 
 -Search-Funktion
 
