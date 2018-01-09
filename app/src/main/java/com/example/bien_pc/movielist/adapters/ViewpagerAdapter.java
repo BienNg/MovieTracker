@@ -1,7 +1,6 @@
 package com.example.bien_pc.movielist.adapters;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +13,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.MovieActivity;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 
 /**
  * This is an adapter for the viewpager in the MovieActivity which displays multiple images.
+ * - Gets the id of the movie and gets the images for the viewpager with a get request.
  * Created by Bien-PC on 06.01.2018.
  */
 
@@ -37,7 +37,6 @@ public class ViewpagerAdapter extends PagerAdapter {
     private static ArrayList<String> movieImageUrls = new ArrayList<>();
     private Context context;
     private LayoutInflater layoutInflater;
-    private MyAsyncTask asyncTask;
 
     private int movieId;
 
@@ -50,11 +49,37 @@ public class ViewpagerAdapter extends PagerAdapter {
         this.context = context;
         this.movieId = movieId;
 
-        MovieDBController movieDBController = new MovieDBController(context);
-        movieDBController.generateImageUrl(movieId);
+        // Reset the Viewpager
+        movieImageUrls.clear();
+        notifyDataSetChanged();
 
-        asyncTask = new MyAsyncTask();
-        asyncTask.execute();
+        final String movieImagesUrl = "https://api.themoviedb.org/3/movie/" + movieId + "/images" + "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, movieImagesUrl, null, new Response.Listener<JSONObject>() {
+
+                    /**
+                     * This is the main part of the method.
+                     * Getting the Json String and passing it on to the JsonParser to get
+                     * the image URLs.
+                     * @param response
+                     */
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = response.toString();
+                        JsonParser jsonParser = new JsonParser(result);
+                        ArrayList<String> imageUrls = jsonParser.getImageUrls();
+                        updateImageURLs(imageUrls);
+                        MovieActivity.updateVisibility();
+                    }
+
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(context).addToRequestQueue(jsObjRequest);
 
     }
 
@@ -118,57 +143,5 @@ public class ViewpagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((RelativeLayout) object);
-    }
-
-    // Getting the JsonObject from that URL
-    class MyAsyncTask extends AsyncTask<String, Void, String> {
-        final String movieImagesUrl = "https://api.themoviedb.org/3/movie/" + movieId + "/images" + "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            movieImageUrls.clear();
-            notifyDataSetChanged();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, movieImagesUrl, null, new Response.Listener<JSONObject>() {
-
-                        /**
-                         * This is the main part of the method.
-                         * Getting the Json String and passing it on to the JsonParser to get
-                         * the image URLs.
-                         * @param response
-                         */
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            String result = response.toString();
-                            JsonParser jsonParser = new JsonParser(result);
-                            ArrayList<String> imageUrls = jsonParser.getImageUrls();
-                            updateImageURLs(imageUrls);
-                            if(isCancelled()){
-                                return;
-                            }
-                        }
-
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                        }
-                    });
-
-            // Access the RequestQueue through your singleton class.
-            MySingleton.getInstance(context).addToRequestQueue(jsObjRequest);
-            return "";
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            resetImageUrlList();
-        }
     }
 }

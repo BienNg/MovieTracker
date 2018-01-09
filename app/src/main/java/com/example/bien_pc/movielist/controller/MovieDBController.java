@@ -84,53 +84,6 @@ public class MovieDBController {
         return result;
     }
 
-    /**
-     * Gets movie by id and updates the MovieActivity UI.
-     * @param id
-     * @return
-     */
-    public void updateMovieActivityUI(int id){
-
-        // Creating the http url for the movie
-        final String movieUrl = URL + "/movie/" + id + API_KEY;
-
-        class RequestOperation extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... strings) {
-
-                final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                        (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
-
-                            /**
-                             * This is the main part of the method.
-                             * Getting the Json String and pass it on to the JsonParser.
-                             * @param response
-                             */
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                String result = response.toString();
-                                JsonParser jsonParser = new JsonParser(result);
-                                Movie movie = jsonParser.getMovie();
-                                MovieActivity.updateUI(movie);
-                            }
-
-                        }, new Response.ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                            }
-                        });
-
-                // Access the RequestQueue through your singleton class.
-                MySingleton.getInstance(mContext).addToRequestQueue(jsObjRequest);
-                return "";
-            }
-        }
-        new RequestOperation().execute();
-
-    }
-
     public ArrayList<Movie> getCollection(final int movieId, int collectionId){
         final String collectionURL = URL + "/collection/" + collectionId + API_KEY;
 

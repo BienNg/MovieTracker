@@ -17,9 +17,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.adapters.HorizontalAdapter;
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;
+import com.example.bien_pc.movielist.controller.JsonParser;
 import com.example.bien_pc.movielist.controller.MovieDBController;
+import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Movie;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +36,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -103,14 +111,46 @@ public class MovieActivity extends AppCompatActivity {
 
         // MovieDBController gets the movie object via its id and calls updateUI()
         MovieDBController movieDBController = new MovieDBController(this);
-        movieDBController.updateMovieActivityUI(id);
+        //movieDBController.updateMovieActivityUI(id);
+
+        getMovieInformationForUi();
+    }
+
+    private void getMovieInformationForUi(){
+        MovieDBController movieDBController = new MovieDBController();
+        String movieUrl = movieDBController.getURL() + "/movie/" + id + movieDBController.getAPI_KEY();
+        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
+
+                    /**
+                     * This is the main part of the method.
+                     * Getting the Json String and pass it on to the JsonParser.
+                     * @param response
+                     */
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = response.toString();
+                        JsonParser jsonParser = new JsonParser(result);
+                        Movie movie = jsonParser.getMovie();
+                        updateUI(movie);
+                    }
+
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
     }
 
     /**
      * Updates the views of the activity.
      * @param movie
      */
-    public static void updateUI(final Movie movie){
+    public void updateUI(final Movie movie){
         // Set the title of the activity
         title = movie.getTitle();
         activity.setTitle(movie.getTitle());
@@ -161,16 +201,7 @@ public class MovieActivity extends AppCompatActivity {
             cardViewRelatedMovies.setVisibility(View.GONE);
         }
 
-        // Set Visibility of the views if the information is not given
-        if(viewpagerAdapter.getCount() == 0){
-            viewPager.setVisibility(View.GONE);
-            bttnAdd.setVisibility(View.GONE);
-            layoutRating.setVisibility(View.GONE);
-        }else{
-            viewPager.setVisibility(View.VISIBLE);
-            bttnAdd.setVisibility(View.VISIBLE);
-            layoutRating.setVisibility(View.VISIBLE);
-        }
+
     }
 
     /**
@@ -243,5 +274,19 @@ public class MovieActivity extends AppCompatActivity {
         rvRelatedMovies.setLayoutManager(llm);
         adapterRelatedMovies = new HorizontalAdapter(context,list);
         rvRelatedMovies.setAdapter(adapterRelatedMovies);
+    }
+
+    public static void updateVisibility(){
+
+        // Set Visibility of the views if the information is not given
+        if(viewpagerAdapter.getCount() == 0){
+            viewPager.setVisibility(View.GONE);
+            bttnAdd.setVisibility(View.GONE);
+            layoutRating.setVisibility(View.GONE);
+        }else{
+            viewPager.setVisibility(View.VISIBLE);
+            bttnAdd.setVisibility(View.VISIBLE);
+            layoutRating.setVisibility(View.VISIBLE);
+        }
     }
 }
