@@ -24,7 +24,6 @@ import com.example.bien_pc.movielist.controller.MovieDBController;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -114,13 +113,32 @@ public class FragmentMyMovies extends Fragment {
      * This method sets up the RecyclerView
      */
     private void setUpRecyclerView(View view) {
-        String[] categories = {"Comedy", "Drama", "Horror"};
 
+        // Init. lists for the categories
+        ArrayList<Movie> comedyMovies = new ArrayList<>();
+        ArrayList<Movie> dramaMovies = new ArrayList<>();
+        ArrayList<Movie> horrorMovies = new ArrayList<>();
 
+        // Seperating seen movies into their categories
+        for (Movie movie : mySeenMovies){
+            for(String genre : movie.getGenres()){
+                if(genre.equals("Drama")){
+                    dramaMovies.add(movie);
+                }
+                if(genre.equals("Horror")){
+                    horrorMovies.add(movie);
+                }
+                if(genre.equals("Comedy")){
+                    comedyMovies.add(movie);
+                }
+            }
+        }
 
-        CategoriesGenerator cg = new CategoriesGenerator(listOfMovies);
-        //Categories List
-        ArrayList<Category> categoriesWithContent = cg.generateCategories();
+        // Adding the categoires to a list
+        ArrayList<Category> categoriesWithContent = new ArrayList<>();
+        categoriesWithContent.add(new Category("Comedy", comedyMovies));
+        categoriesWithContent.add(new Category("Drama", dramaMovies));
+        categoriesWithContent.add(new Category("Horror", horrorMovies));
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_mymovies_rv_categories);
         // Setting RecyclerView
