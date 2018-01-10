@@ -58,15 +58,7 @@ public class FragmentHome extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentHome.
-     */
-    // TODO: Rename and change types and number of parameters
+    /*NOT USED*/
     public static FragmentHome newInstance(String param1, String param2) {
         FragmentHome fragment = new FragmentHome();
         Bundle args = new Bundle();
@@ -76,6 +68,7 @@ public class FragmentHome extends Fragment {
         return fragment;
     }
 
+    /*NOT USED*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
