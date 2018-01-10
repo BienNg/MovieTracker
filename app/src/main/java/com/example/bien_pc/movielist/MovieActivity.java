@@ -21,11 +21,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.bien_pc.movielist.adapters.HorizontalAdapter;
+import com.example.bien_pc.movielist.adapters.ActorsAdapter;
+import com.example.bien_pc.movielist.adapters.MoviesAdapter;
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;
 import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDBController;
+import com.example.bien_pc.movielist.controller.MDBUrls;
 import com.example.bien_pc.movielist.controller.MySingleton;
+import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,37 +45,38 @@ import java.util.ArrayList;
 
 public class MovieActivity extends AppCompatActivity {
 
-    //Attributes
+    //Variables
     private static final String TAG = "MovieActivity";
     private static Activity activity;
     private static Context context;
     private int id;
-    private static ArrayList<Movie> collection;
     private static String title;
     private FirebaseAuth mAuth;
 
     //Views
     private static ViewPager viewPager;
     private static ViewpagerAdapter viewpagerAdapter;
-    private static TextView textReleaseYear, textGenres, textDescription, textRating;
-    private static ImageView imagePoster;
+    private TextView textReleaseYear, textGenres, textDescription, textRating;
+    private ImageView imagePoster;
     private static ImageButton bttnAdd;
     private static LinearLayout layoutRating;
-    private static CardView cardViewRelatedMovies;
+    private CardView cardViewRelatedMovies;
 
-    // Variables for the collection RV
-    private  static HorizontalAdapter adapterRelatedMovies;
-    private static RecyclerView rvRelatedMovies;
+    // Variables for the collection RecyclerViews
+    private  static MoviesAdapter adapterRelatedMovies;
+    private  static ActorsAdapter adapterActors;
+    private static RecyclerView rvRelatedMovies, rvActors;
+    private ArrayList<Actor> listActors = new ArrayList<>();
 
 
-
+    /**
+     * Getting the movie id
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
-
-        // Getting the movie id and title
-        id = getIntent().getIntExtra("ID", 0);
 
         // Setting up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -82,21 +85,11 @@ public class MovieActivity extends AppCompatActivity {
         // Getting Firabase Instance
         mAuth = FirebaseAuth.getInstance();
 
-        // Setting up the Add Button
-        bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
-        setUpAddButton();
+        // Getting the movie id and title
+        id = getIntent().getIntExtra("ID", 0);
 
         activity = this;
         context = this;
-
-        // Init. Variables
-        collection = new ArrayList<>();
-
-        // Setting up ViewPager
-        viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
-        viewpagerAdapter = new ViewpagerAdapter(this, id);
-        viewPager.setAdapter(viewpagerAdapter);
-
 
         //Init. Views
         textReleaseYear = (TextView) findViewById(R.id.mv_text_release_year);
@@ -104,21 +97,26 @@ public class MovieActivity extends AppCompatActivity {
         textDescription = (TextView) findViewById(R.id.mv_text_description);
         textRating = (TextView) findViewById(R.id.mv_text_rating);
         imagePoster= (ImageView) findViewById(R.id.mv_image_poster);
-        rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_collection);
+        rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_related_movies);
+        rvActors = (RecyclerView) findViewById(R.id.mv_rv_cast);
         layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
         cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
 
+        // Setting up the Add Button
+        bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
+        setUpAddButton();
 
-        // MovieDBController gets the movie object via its id and calls updateUI()
-        MovieDBController movieDBController = new MovieDBController(this);
-        //movieDBController.updateMovieActivityUI(id);
+        // Setting up ViewPager
+        viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
+        viewpagerAdapter = new ViewpagerAdapter(this, id);
+        viewPager.setAdapter(viewpagerAdapter);
 
         getMovieInformationForUi();
     }
 
     private void getMovieInformationForUi(){
-        MovieDBController movieDBController = new MovieDBController();
-        String movieUrl = movieDBController.getURL() + "/movie/" + id + movieDBController.getAPI_KEY();
+        MDBUrls mdbUrls = new MDBUrls();
+        String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
 
@@ -150,11 +148,10 @@ public class MovieActivity extends AppCompatActivity {
      * Updates the views of the activity.
      * @param movie
      */
-    public void updateUI(final Movie movie){
+    private void updateUI(final Movie movie){
         // Set the title of the activity
         title = movie.getTitle();
         activity.setTitle(movie.getTitle());
-
 
         // Set the release date of the movie
         textReleaseYear.setText(movie.getYear());
@@ -171,7 +168,6 @@ public class MovieActivity extends AppCompatActivity {
         textGenres.setText(genres);
 
         // Setting poster image if there is a poster url
-        Log.d(TAG, "updateUI: posterPath ::: " + movie.getPosterPath());
         if(movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()){
             Picasso.with(context).load(movie.getPosterPath()).into(imagePoster, new Callback() {
                 @Override
@@ -193,13 +189,17 @@ public class MovieActivity extends AppCompatActivity {
         // Setting the descripton
         textDescription.setText(movie.getDescription());
 
+        // Setting up the related movies recycler view
         if (movie.getCollectionId() != 0){
             cardViewRelatedMovies.setVisibility(View.VISIBLE);
-            MovieDBController controller = new MovieDBController();
+            MDBUrls controller = new MDBUrls();
             controller.getCollection(movie.getId(), movie.getCollectionId());
         }else{
             cardViewRelatedMovies.setVisibility(View.GONE);
         }
+
+        // Setting up the actors recycler view
+        setupRecyclerViewActors();
 
 
     }
@@ -232,7 +232,7 @@ public class MovieActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    
+
                 }
             });
         }
@@ -265,15 +265,69 @@ public class MovieActivity extends AppCompatActivity {
         });
     }
 
-    public static void updateCollectionRV(ArrayList<Movie> list){
-        collection = list;
+    /**
+     * Gets list of related movies and updates the related movies recycler view
+     * @param list
+     */
+    public static void updateRelatedMoviesRV(ArrayList<Movie> list){
 
-        // Setting up the Recycler View of the collection
+        // Setting up the Recycler View of the related Movies
         rvRelatedMovies.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvRelatedMovies.setLayoutManager(llm);
-        adapterRelatedMovies = new HorizontalAdapter(context,list);
+        adapterRelatedMovies = new MoviesAdapter(context,list);
         rvRelatedMovies.setAdapter(adapterRelatedMovies);
+    }
+
+
+    /**
+     * Sets up the Actors Recycler View.
+     * First: gets all the actors.
+     * Second: updates the recyclerview.
+     */
+    private void setupRecyclerViewActors(){
+        // Getting URL of the actors
+        MDBUrls mdbUrls = new MDBUrls();
+        String actorsUrl = mdbUrls.generateActorsListUrl(id);
+        Log.d(TAG, "setupRecyclerViewActors: actorsUrl ::: " + actorsUrl);
+        // Getting list of actors
+        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, actorsUrl, null, new Response.Listener<JSONObject>() {
+
+                    /**
+                     * This is the main part of the method.
+                     * Getting the Json String and pass it on to the JsonParser.
+                     * @param response
+                     */
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = response.toString();
+                        JsonParser jsonParser = new JsonParser(result);
+                        listActors = jsonParser.getActors();
+                        initRecyclerViewActors();
+                    }
+
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+
+    }
+
+    private void initRecyclerViewActors(){
+        for(Actor actor : listActors){
+            Log.d(TAG, "initRecyclerViewActors: actor ::: " + actor.getName());
+        }
+        rvActors.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false);
+        rvActors.setLayoutManager(linearLayoutManager);
+        adapterActors = new ActorsAdapter(context, listActors);
+        rvActors.setAdapter(adapterActors);
     }
 
     public static void updateVisibility(){

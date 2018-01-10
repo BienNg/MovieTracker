@@ -1,7 +1,5 @@
 package com.example.bien_pc.movielist.models;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 /**
@@ -56,7 +54,6 @@ public class Movie {
         return posterPath;
     }
     public void setPosterPath(String posterPath) {
-        Log.d(TAG, "setPosterPath: posterPath ::: " + posterPath.length());
         if(!posterPath.equals("null")) {
             this.posterPath = "https://image.tmdb.org/t/p/w500" + posterPath;
         }else{
@@ -84,6 +81,7 @@ public class Movie {
     public void setCollectionId(int collectionId) {
         this.collectionId = collectionId;
     }
+
 
     //Constructor
     public Movie(int id, String title){

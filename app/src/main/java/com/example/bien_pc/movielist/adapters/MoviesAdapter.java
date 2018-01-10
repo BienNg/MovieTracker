@@ -24,18 +24,18 @@ import java.util.List;
  * Created by Bien-PC on 03.01.2018.
  */
 
-public class HorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     
-    private final String TAG = "HorizontalAdapter";
+    private final String TAG = "MoviesAdapter";
     private Context context;
     private List<Movie> mDataList = new ArrayList<>();
     private int mRowIndex = -1;
 
-    public HorizontalAdapter(Context context) {
+    public MoviesAdapter(Context context) {
         this.context = context;
     }
 
-    public HorizontalAdapter(Context context, ArrayList<Movie> movies) {
+    public MoviesAdapter(Context context, ArrayList<Movie> movies) {
         this.context = context;
         mDataList = movies;
     }

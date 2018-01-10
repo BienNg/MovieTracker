@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 /**
  * This is an adapter for the viewpager in the MovieActivity which displays multiple images.
- * - Gets the id of the movie and gets the images for the viewpager with a get request.
+ * - Gets the id of the movie and gets the images for the viewpager from the database
  * Created by Bien-PC on 06.01.2018.
  */
 
@@ -37,9 +37,6 @@ public class ViewpagerAdapter extends PagerAdapter {
     private static ArrayList<String> movieImageUrls = new ArrayList<>();
     private Context context;
     private LayoutInflater layoutInflater;
-
-    private int movieId;
-
     /**
      * Constructor that fills the movieImageUrls list with the id.
      * @param context
@@ -47,7 +44,6 @@ public class ViewpagerAdapter extends PagerAdapter {
      */
     public ViewpagerAdapter(final Context context, int movieId){
         this.context = context;
-        this.movieId = movieId;
 
         // Reset the Viewpager
         movieImageUrls.clear();
@@ -85,11 +81,6 @@ public class ViewpagerAdapter extends PagerAdapter {
 
     public void updateImageURLs(ArrayList<String> list){
         movieImageUrls = list;
-        notifyDataSetChanged();
-    }
-
-    public void resetImageUrlList(){
-        movieImageUrls = null;
         notifyDataSetChanged();
     }
 

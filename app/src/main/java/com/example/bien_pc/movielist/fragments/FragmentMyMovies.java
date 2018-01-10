@@ -25,7 +25,7 @@ import com.example.bien_pc.movielist.SignIn;
 import com.example.bien_pc.movielist.StatisticActivity;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDBController;
+import com.example.bien_pc.movielist.controller.MDBUrls;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
@@ -189,8 +189,8 @@ public class FragmentMyMovies extends Fragment {
     private void fillMySeenMoviesList(final ArrayList<String> idOfMovies, final View view) {
 
         for (String id : idOfMovies) {
-            MovieDBController movieDBController = new MovieDBController();
-            final String movieUrl = movieDBController.getURL() + "/movie/" + id + movieDBController.getAPI_KEY();
+            MDBUrls mdbUrls = new MDBUrls();
+            final String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
             final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                     (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
 

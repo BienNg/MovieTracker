@@ -21,20 +21,10 @@ import java.util.ArrayList;
  * Created by Bien-PC on 04.01.2018.
  */
 
-public class MovieDBController {
+public class MDBUrls {
     private final String URL = "https://api.themoviedb.org/3";
-    private final String QUERY_TITLE = "/search/movie?api_key=c9fa182d1bdc69a05cdaf873e0216d82&query=";
     private final String API_KEY = "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
-    private final String TAG = "MovieDBController";
-
-    public String getURL() {
-        return URL;
-    }
-
-    public String getAPI_KEY() {
-        return API_KEY;
-    }
-
+    private final String TAG = "MDBUrls";
     private RequestObject requestObject;
     private Context mContext;
 
@@ -42,7 +32,7 @@ public class MovieDBController {
      * Constructor for requests.
      * @param requestObject
      */
-    public MovieDBController(RequestObject requestObject) {
+    public MDBUrls(RequestObject requestObject) {
         this.requestObject = requestObject;
     }
 
@@ -50,14 +40,14 @@ public class MovieDBController {
     /**
      * Standard Constructor.
      */
-    public MovieDBController(Context context){
+    public MDBUrls(Context context){
         this.mContext = context;
     }
 
     /**
      * Empty Constructor
      */
-    public MovieDBController(){}
+    public MDBUrls(){}
 
     /**
      * Returns the correct URL according to the request Object
@@ -109,7 +99,7 @@ public class MovieDBController {
                                 JsonParser jsonParser = new JsonParser(result);
                                 ArrayList<Movie> list = jsonParser.getCollection(movieId);
                                 if(list != null){
-                                    MovieActivity.updateCollectionRV(list);
+                                    MovieActivity.updateRelatedMoviesRV(list);
                                 }
                             }
 
@@ -130,16 +120,6 @@ public class MovieDBController {
         return null;
     }
 
-    /**
-     * Methods that generate get request urls.
-     */
-    public void generateImageUrl(int movieId){
-
-
-    }
-    private String generateMovieSearchUrl(String title){
-        return URL + QUERY_TITLE +title;
-    }
     private String generatePopularMoviesUrl(){
         return URL+"/movie/popular"+API_KEY;
     }
@@ -151,5 +131,15 @@ public class MovieDBController {
     }
     private String generateHorrorMoviesUrl(){
         return URL+"/genre/27/movies"+API_KEY;
+    }
+    public String generateActorsListUrl(int id){
+        return URL + "/movie/" + id + "/credits" + API_KEY;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+    public String getAPI_KEY() {
+        return API_KEY;
     }
 }

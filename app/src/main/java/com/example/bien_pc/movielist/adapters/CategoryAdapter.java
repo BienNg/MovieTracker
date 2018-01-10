@@ -25,7 +25,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         public final TextView title;
-        private HorizontalAdapter horizontalAdapter;
+        private MoviesAdapter moviesAdapter;
 
         public SimpleViewHolder(View view) {
             super(view);
@@ -33,8 +33,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
             title = (TextView) view.findViewById(R.id.category_title);
             horizontalList = (RecyclerView) itemView.findViewById(R.id.rv_horizontal_movies);
             horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            horizontalAdapter = new HorizontalAdapter(view.getContext());
-            horizontalList.setAdapter(horizontalAdapter);
+            moviesAdapter = new MoviesAdapter(view.getContext());
+            horizontalList.setAdapter(moviesAdapter);
         }
     }
 
@@ -46,15 +46,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
     }
 
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(mContext).inflate(R.layout.rv_item_horizontal_movies, parent, false);
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.rv_item_category, parent, false);
         return new SimpleViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, final int position) {
         holder.title.setText(mData.get(position).getTitle());
-        holder.horizontalAdapter.setData(mData.get(position).getMovies()); // List of Strings
-        holder.horizontalAdapter.setRowIndex(position);
+        holder.moviesAdapter.setData(mData.get(position).getMovies()); // List of Strings
+        holder.moviesAdapter.setRowIndex(position);
     }
 
     @Override

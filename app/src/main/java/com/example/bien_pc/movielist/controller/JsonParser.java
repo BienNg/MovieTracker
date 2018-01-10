@@ -2,6 +2,7 @@ package com.example.bien_pc.movielist.controller;
 
 import android.util.Log;
 
+import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
 
 import org.json.JSONArray;
@@ -77,23 +78,18 @@ public class JsonParser {
             int id = json.getInt("id");
             String title = json.getString("title");
             Movie movie = new Movie(id, title);
-
             //Getting year and genres of the movie
             String year = json.getString("release_date");
-
             ArrayList<String> genres = new ArrayList<>();
             JSONArray jsonArray = json.getJSONArray("genres");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jo = jsonArray.getJSONObject(i);
                 genres.add(jo.getString("name"));
             }
-            //Setting year and genre
             movie.setGenres(genres);
             movie.setYear(year);
-
             //Getting and setting poster image
             movie.setPosterPath(json.getString("poster_path"));
-
             //Getting and setting rating
             movie.setRating(json.getString("vote_average"));
             //Getting and setting movie description
@@ -102,6 +98,9 @@ public class JsonParser {
             if (!json.isNull("belongs_to_collection")) {
                 movie.setCollectionId(json.getJSONObject("belongs_to_collection").getInt("id"));
             }
+
+            // Getting actors
+
             return movie;
 
         } catch (JSONException e) {
@@ -112,11 +111,6 @@ public class JsonParser {
     }
 
     public ArrayList<Movie> getCollection(int movieId) {
-
-
-        /**
-         * Main part in this try block
-         */
         try {
             // Check if collection exists
             if (json.has("parts")) {
@@ -166,5 +160,32 @@ public class JsonParser {
             e.printStackTrace();
         }
         return imageUrls;
+    }
+
+    public ArrayList<Actor> getActors() {
+        try {
+            // Create actors list
+            ArrayList<Actor> actors = new ArrayList<>();
+
+            // Iterating through the JSONArray of the movies and add them to the collection
+            JSONArray arrayOfActors = json.getJSONArray("cast");
+            for (int i = 0; i < arrayOfActors.length(); i++) {
+                // Creating the actor object for every part.
+                int id = arrayOfActors.getJSONObject(i).getInt("id");
+                Actor actor = new Actor(id);
+
+                // Setting the Properties of the actor
+                String name = arrayOfActors.getJSONObject(i).getString("name");
+                String profilePath = arrayOfActors.getJSONObject(i).getString("profile_path");
+                actor.setName(name);
+                actor.setProfilePath(profilePath);
+                actors.add(actor);
+            }
+            return actors;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

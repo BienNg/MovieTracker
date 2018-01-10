@@ -19,7 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MovieDBController;
+import com.example.bien_pc.movielist.controller.MDBUrls;
 import com.example.bien_pc.movielist.controller.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
@@ -132,7 +132,7 @@ public class FragmentHome extends Fragment {
             protected String doInBackground(String... strings) {
 
                 // Generating the HTTP URL
-                final String url = new MovieDBController(requestObject).getUrl();
+                final String url = new MDBUrls(requestObject).getUrl();
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest
                         (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

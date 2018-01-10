@@ -35,7 +35,10 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-        <activity android:name=".StatisticActivity"></activity>
+        <activity
+            android:name=".StatisticActivity"
+            android:label="Statistics" />
+        <activity android:name=".ActorActivity"></activity>
     </application>
 
 </manifest>

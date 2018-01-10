@@ -15,9 +15,18 @@ MovieActiviy:
 -MyMovies Activity
 	-[X]Layout designen
 	-[X]RecyclerViews mit Filmen vom user befüllen
+	-List of Actors
 
 -Search-Funktion
 
-Bug:
+-StatisticsActivity
+	-[X]Categories
+	-Actors
+	-Directors
+	-Change Title
+	-Open activity with movies of a genre
+
+Bugs:
 - [X] [MainActivity] RecyclerView verursacht absturz.
-	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.			
+	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.		
+- [MovieActivity] Add-Button is changed too slowly. 	
