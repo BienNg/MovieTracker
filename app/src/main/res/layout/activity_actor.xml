@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -52,26 +52,29 @@
                             android:id="@+id/actor_txt_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_color1"/>
+                            android:textColor="@color/text_color1" />
+
                         <TextView
                             android:id="@+id/actor_txt_birthday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_color1"/>
+                            android:textColor="@color/text_color1" />
+
                         <TextView
                             android:id="@+id/actor_txt_country"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_color1"/>
+                            android:textColor="@color/text_color1" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="24sp"
+                    android:text="Biography"
                     android:textColor="@color/text_color1"
-                    android:text="Biography"/>
+                    android:textSize="24sp" />
+
                 <TextView
                     android:id="@+id/actor_text_description"
                     android:layout_width="match_parent"
@@ -80,12 +83,27 @@
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"
                     android:layout_marginTop="4dp"
-                    android:textColor="@color/text_color2"
-                    android:text="N/A"/>
+                    android:text="N/A"
+                    android:textColor="@color/text_color2" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
 
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/card_view_dark_grey">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/actor_rv_credits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false">
+
+            </android.support.v7.widget.RecyclerView>
+        </android.support.v7.widget.CardView>
+
     </LinearLayout>
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

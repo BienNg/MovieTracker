@@ -2,6 +2,8 @@ package com.example.bien_pc.movielist;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.adapters.MoviesAdapter;
 import com.example.bien_pc.movielist.helper.JsonParser;
 import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
@@ -33,6 +36,9 @@ public class ActorActivity extends AppCompatActivity {
     private ImageView imageActor;
     private TextView txtName, txtBrithday, txtCountry, txtDescription;
 
+    // RecyclerView
+    private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,7 @@ public class ActorActivity extends AppCompatActivity {
         txtBrithday = (TextView) findViewById(R.id.actor_txt_birthday);
         txtCountry = (TextView) findViewById(R.id.actor_txt_country);
         txtDescription = (TextView) findViewById(R.id.actor_text_description);
+        recyclerView = (RecyclerView) findViewById(R.id.actor_rv_credits);
 
         getActorsBasicInfo();
         getActorsMovieCredits();
@@ -145,10 +152,16 @@ public class ActorActivity extends AppCompatActivity {
         }
 
     }
+
     private void setCreditViewsFromActor(ArrayList<Movie> credits){
         for(Movie movie : credits){
             Log.d(TAG, "setCreditViewsFromActor: movie ::: " + movie.getTitle());
         }
 
+        int numberOfColumns = 3;
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        MoviesAdapter moviesAdapter = new MoviesAdapter(this, credits);
+        recyclerView.setAdapter(moviesAdapter);
     }
 }
