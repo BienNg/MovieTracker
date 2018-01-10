@@ -44,6 +44,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This Fragment shows the movies that the user has seen
@@ -110,8 +111,6 @@ public class FragmentMyMovies extends Fragment {
             Intent intent = new Intent(getContext(), SignIn.class);
             startActivity(intent);
         } else {
-
-            //TEST TODO delete
             updateRecyclerUI(view);
         }
     }
@@ -121,37 +120,32 @@ public class FragmentMyMovies extends Fragment {
      */
     private void setUpRecyclerView(View view) {
 
-        // Init. lists for the categories
-        ArrayList<Movie> comedyMovies = new ArrayList<>();
-        ArrayList<Movie> dramaMovies = new ArrayList<>();
-        ArrayList<Movie> horrorMovies = new ArrayList<>();
+        // This map contains the genre as key and their movies as value
+        HashMap<String, ArrayList<Movie>> mapCategories = new HashMap<>();
 
-        // Seperating seen movies into their categories
-        for (Movie movie : mySeenMovies) {
-            for (String genre : movie.getGenres()) {
-                if (genre.equals("Drama")) {
-                    dramaMovies.add(movie);
-                }
-                if (genre.equals("Horror")) {
-                    horrorMovies.add(movie);
-                }
-                if (genre.equals("Comedy")) {
-                    comedyMovies.add(movie);
+        // Filling the categories with movies
+        for (Movie movie : mySeenMovies){
+            for(String genre : movie.getGenres()){
+                if(!mapCategories.containsKey(genre)){
+                    ArrayList<Movie> list = new ArrayList<>();
+                    list.add(movie);
+                    mapCategories.put(genre, list);
+                }else{
+                    ArrayList<Movie> list = mapCategories.get(genre);
+                    list.add(movie);
+                    mapCategories.put(genre, list);
                 }
             }
         }
 
-
         // Adding the categoires to the list
         ArrayList<Category> categoriesWithContent = new ArrayList<>();
-        if (comedyMovies.size() > 0) {
-            categoriesWithContent.add(new Category("Comedy", sortByYear(comedyMovies)));
-        }
-        if (dramaMovies.size() > 0) {
-            categoriesWithContent.add(new Category("Drama", sortByYear(dramaMovies)));
-        }
-        if (categoriesWithContent.size() > 0) {
-            categoriesWithContent.add(new Category("Horror", sortByYear(horrorMovies)));
+
+        // Adding every genre to the RecyclerView that has more than 9 movies
+        for(String genre : mapCategories.keySet()){
+            if(mapCategories.get(genre).size() > 9){
+                categoriesWithContent.add(new Category(genre, sortByYear(mapCategories.get(genre))));
+            }
         }
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_mymovies_rv_categories);
@@ -197,6 +191,10 @@ public class FragmentMyMovies extends Fragment {
         return sortedList;
     }
 
+    /**
+     * Getting the seen movies from the firebase
+     * @param view
+     */
     private void updateRecyclerUI(final View view) {
         // Init. movies of the user
         ArrayList<Movie> moviesOfUser = new ArrayList<>();
@@ -224,6 +222,11 @@ public class FragmentMyMovies extends Fragment {
         });
     }
 
+    /**
+     * Getting the movie objects from the data base
+     * @param idOfMovies
+     * @param view
+     */
     private void fillMySeenMoviesList(final ArrayList<String> idOfMovies, final View view) {
 
         for (String id : idOfMovies) {
