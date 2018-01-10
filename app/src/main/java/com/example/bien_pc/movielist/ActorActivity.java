@@ -24,7 +24,11 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ActorActivity extends AppCompatActivity {
 
@@ -154,14 +158,45 @@ public class ActorActivity extends AppCompatActivity {
     }
 
     private void setCreditViewsFromActor(ArrayList<Movie> credits){
-        for(Movie movie : credits){
-            Log.d(TAG, "setCreditViewsFromActor: movie ::: " + movie.getTitle());
-        }
 
         int numberOfColumns = 3;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        MoviesAdapter moviesAdapter = new MoviesAdapter(this, credits);
+        MoviesAdapter moviesAdapter = new MoviesAdapter(this, sortByYear(credits));
         recyclerView.setAdapter(moviesAdapter);
+    }
+
+
+    /**
+     * Sorts a list by date and returns the sorted list.
+     * @param list
+     * @return
+     */
+    private ArrayList<Movie> sortByYear(ArrayList<Movie> list){
+        ArrayList<Movie> sortedList = new ArrayList<>();
+        for(Movie movie : list){
+            String year = movie.getYear();
+            DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+
+            try {
+                Date date1 = format.parse(year);
+                if(sortedList.isEmpty()){
+                    sortedList.add(movie);
+                }else{
+                    for (int i = 0; i < sortedList.size(); i++) {
+                        Date date2 = format.parse(sortedList.get(i).getYear());
+                        if(date2.before(date1)){
+                            sortedList.add(i,movie);
+                            break;
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e(TAG, "sortByYear: some error idk.", e );
+                return list;
+            }
+        }
+        return sortedList;
     }
 }

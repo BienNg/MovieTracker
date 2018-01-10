@@ -3,7 +3,6 @@ package com.example.bien_pc.movielist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -101,15 +100,11 @@ public class StatisticActivity extends AppCompatActivity {
             }
         }
 
-        String[] listViewItems = new String[mapOfGenres.size()];
-        int counter = 0;
+        String[] listViewItems = new String[mapOfGenres.size()+1];
+        listViewItems[0] = "Total: " + movies.size();
+        int counter = 1;
         // Printing the hashmap
         for (String genre: mapOfGenres.keySet()){
-            ArrayList<Movie> value = mapOfGenres.get(genre);
-            for(Movie movie : value){
-                Log.d(TAG, "splitMoviesInGenres: " + genre + " : " + movie.getTitle());
-            }
-
             String listviewItemText = genre + " : " + mapOfGenres.get(genre).size();
             listViewItems[counter] = listviewItemText;
             counter++;

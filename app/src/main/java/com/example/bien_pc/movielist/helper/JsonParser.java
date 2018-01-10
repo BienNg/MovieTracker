@@ -227,6 +227,7 @@ public class JsonParser {
                 Movie movie = new Movie(id, title);
                 movie.setCharacter(listOfCredits.getJSONObject(i).getString("character"));
                 movie.setPosterPath(listOfCredits.getJSONObject(i).getString("poster_path"));
+                movie.setYear(listOfCredits.getJSONObject(i).getString("release_date"));
                 credits.add(movie);
             }
         } catch (JSONException e) {

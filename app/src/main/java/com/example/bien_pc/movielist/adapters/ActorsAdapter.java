@@ -92,7 +92,7 @@ public class ActorsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             });
         }
 
-        // Setting name of item
+        // Setting name of actor
         holder.txtNameActor.setText(mDataList.get(position).getName());
 
         //Setting click listener for the movie item

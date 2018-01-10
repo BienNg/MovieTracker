@@ -194,9 +194,6 @@ public class FragmentMyMovies extends Fragment {
                 return list;
             }
         }
-        for (Movie m : sortedList){
-            Log.d(TAG, "sortByYear: movie date ::: " + m.getYear());
-        }
         return sortedList;
     }
 
