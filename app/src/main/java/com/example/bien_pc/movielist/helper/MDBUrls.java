@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.controller;
+package com.example.bien_pc.movielist.helper;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -134,6 +134,12 @@ public class MDBUrls {
     }
     public String generateActorsListUrl(int id){
         return URL + "/movie/" + id + "/credits" + API_KEY;
+    }
+    public String generateActorInfoUrl(int id){
+        return URL + "/person/" + id + API_KEY;
+    }
+    public String generateActorsCredits(int id){
+        return URL + "/person/" + id + "/combined_credits" + API_KEY;
     }
 
     public String getURL() {

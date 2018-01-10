@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.controller;
+package com.example.bien_pc.movielist.helper;
 
 import android.content.Context;
 

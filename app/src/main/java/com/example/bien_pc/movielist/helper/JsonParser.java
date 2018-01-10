@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.controller;
+package com.example.bien_pc.movielist.helper;
 
 import android.util.Log;
 
@@ -21,7 +21,6 @@ public class JsonParser {
 
     // Attributes
     private final String TAG = "JsonParser";
-    private String jsonString;
     private JSONObject json;
     private ArrayList<Movie> list;
 
@@ -31,14 +30,13 @@ public class JsonParser {
      * @param s
      */
     public JsonParser(String s) {
-        jsonString = s;
         Log.d(TAG, "JsonParser jsonString: " + s);
         try {
 
-            json = new JSONObject(jsonString);
+            json = new JSONObject(s);
 
         } catch (Throwable t) {
-            Log.e(TAG, "Could not parse malformed JSON: \"" + jsonString + "\"");
+            Log.e(TAG, "Could not parse malformed JSON: \"" + s + "\"");
         }
     }
 
@@ -187,5 +185,54 @@ public class JsonParser {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Returns the basic information of an actor
+     * @return
+     */
+    public Actor getActor(){
+
+        try {
+            Actor actor = new Actor(json.getInt("id"));
+            actor.setName(json.getString("name"));
+            if(json.has("birthday")){
+                actor.setBirth(json.getString("birthday"));
+            }
+            if(json.has("place_of_birth")){
+                actor.setCountry(json.getString("place_of_birth"));
+            }
+            if(json.has("profile_path")) {
+                actor.setProfilePath(json.getString("profile_path"));
+            }
+            actor.setDescription(json.getString("biography"));
+
+            return actor;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public ArrayList<Movie> getActorCredits(){
+        ArrayList<Movie> credits = new ArrayList<>();
+
+        try {
+            JSONArray listOfCredits = json.getJSONArray("cast");
+            for (int i = 0; i < listOfCredits.length(); i++) {
+                int id = listOfCredits.getJSONObject(i).getInt("id");
+                String title = listOfCredits.getJSONObject(i).getString("title");
+                Movie movie = new Movie(id, title);
+                movie.setCharacter(listOfCredits.getJSONObject(i).getString("character"));
+                movie.setPosterPath(listOfCredits.getJSONObject(i).getString("poster_path"));
+                credits.add(movie);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return credits;
     }
 }

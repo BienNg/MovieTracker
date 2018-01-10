@@ -15,8 +15,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.MovieActivity;
 import com.example.bien_pc.movielist.R;
-import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MySingleton;
+import com.example.bien_pc.movielist.helper.JsonParser;
+import com.example.bien_pc.movielist.helper.MySingleton;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 

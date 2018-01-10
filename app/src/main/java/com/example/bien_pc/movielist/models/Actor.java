@@ -6,41 +6,39 @@ package com.example.bien_pc.movielist.models;
 
 public class Actor {
     private int id;
+    private String name, birth, country, profilePath, description;
 
+    // Getter and Setter
     public Actor(int id){
         this.id = id;
     }
-
     public int getId() {
         return id;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public String getBirth() {
         return birth;
     }
-
     public void setBirth(String birth) {
         this.birth = birth;
     }
-
     public String getCountry() {
         return country;
     }
-
     public void setCountry(String country) {
         this.country = country;
     }
-
-    private String name, birth, country, profilePath;
-
+    public String getBio() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getProfilePath() {
         return profilePath;

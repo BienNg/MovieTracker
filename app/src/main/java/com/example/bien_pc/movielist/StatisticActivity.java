@@ -12,9 +12,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.bien_pc.movielist.controller.JsonParser;
-import com.example.bien_pc.movielist.controller.MDBUrls;
-import com.example.bien_pc.movielist.controller.MySingleton;
+import com.example.bien_pc.movielist.helper.JsonParser;
+import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Movie;
 
 import org.json.JSONObject;

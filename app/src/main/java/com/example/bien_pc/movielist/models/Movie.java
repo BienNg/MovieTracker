@@ -17,7 +17,7 @@ public class Movie {
      */
     private int id;
     private int collectionId;
-    private String title, year, posterPath, rating, description;
+    private String title, year, posterPath, rating, description, character;
     private ArrayList<String> genres;
 
     // List of attributes e.g. Netflix, Amazon Prime
@@ -81,7 +81,13 @@ public class Movie {
     public void setCollectionId(int collectionId) {
         this.collectionId = collectionId;
     }
+    public String getCharacter() {
+        return character;
+    }
 
+    public void setCharacter(String character) {
+        this.character = character;
+    }
 
     //Constructor
     public Movie(int id, String title){
