@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -20,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.SignIn;
+import com.example.bien_pc.movielist.StatisticActivity;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.controller.JsonParser;
 import com.example.bien_pc.movielist.controller.MovieDBController;
@@ -37,7 +40,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * This Fragment shows the movies that the user has seen
@@ -47,8 +49,8 @@ public class FragmentMyMovies extends Fragment {
     //Variables
     private final String TAG = "FragmentMyMovies";
     private ArrayList<Movie> mySeenMovies = new ArrayList<>();
+    private final ArrayList<String> idOfMovies = new ArrayList<>();
     private CategoryAdapter adapter;
-    private HashMap<String, ArrayList<Movie>> listOfMovies;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -121,15 +123,15 @@ public class FragmentMyMovies extends Fragment {
         ArrayList<Movie> horrorMovies = new ArrayList<>();
 
         // Seperating seen movies into their categories
-        for (Movie movie : mySeenMovies){
-            for(String genre : movie.getGenres()){
-                if(genre.equals("Drama")){
+        for (Movie movie : mySeenMovies) {
+            for (String genre : movie.getGenres()) {
+                if (genre.equals("Drama")) {
                     dramaMovies.add(movie);
                 }
-                if(genre.equals("Horror")){
+                if (genre.equals("Horror")) {
                     horrorMovies.add(movie);
                 }
-                if(genre.equals("Comedy")){
+                if (genre.equals("Comedy")) {
                     comedyMovies.add(movie);
                 }
             }
@@ -137,13 +139,13 @@ public class FragmentMyMovies extends Fragment {
 
         // Adding the categoires to a list
         ArrayList<Category> categoriesWithContent = new ArrayList<>();
-        if(comedyMovies.size() > 0){
+        if (comedyMovies.size() > 0) {
             categoriesWithContent.add(new Category("Comedy", comedyMovies));
         }
-        if(dramaMovies.size() > 0){
+        if (dramaMovies.size() > 0) {
             categoriesWithContent.add(new Category("Drama", dramaMovies));
         }
-        if(categoriesWithContent.size() > 0){
+        if (categoriesWithContent.size() > 0) {
             categoriesWithContent.add(new Category("Horror", horrorMovies));
         }
 
@@ -160,7 +162,6 @@ public class FragmentMyMovies extends Fragment {
     private void updateRecyclerUI(final View view) {
         // Init. movies of the user
         ArrayList<Movie> moviesOfUser = new ArrayList<>();
-        final ArrayList<String> idOfMovies = new ArrayList<>();
 
         // Init. Firebase Database
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -185,7 +186,7 @@ public class FragmentMyMovies extends Fragment {
         });
     }
 
-    private void fillMySeenMoviesList(final ArrayList<String> idOfMovies, final View view){
+    private void fillMySeenMoviesList(final ArrayList<String> idOfMovies, final View view) {
 
         for (String id : idOfMovies) {
             MovieDBController movieDBController = new MovieDBController();
@@ -206,7 +207,7 @@ public class FragmentMyMovies extends Fragment {
                             Movie movie = jsonParser.getMovie();
                             mySeenMovies.add(movie);
                             Log.d(TAG, "onResponse: mySeenMovies size ::: " + mySeenMovies.size());
-                            if(mySeenMovies.size() ==  idOfMovies.size()){
+                            if (mySeenMovies.size() == idOfMovies.size()) {
                                 setUpRecyclerView(view);
                             }
                         }
@@ -220,10 +221,7 @@ public class FragmentMyMovies extends Fragment {
             // Access the RequestQueue through your singleton class.
             MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjRequest);
         }
-
-
     }
-
 
 
     @Override
@@ -239,6 +237,24 @@ public class FragmentMyMovies extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_fragment_mymovies, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_menu_statistics:
+                if(idOfMovies.size() != 0){
+                    Intent intent = new Intent(getActivity(), StatisticActivity.class);
+                    intent.putStringArrayListExtra("ID_OF_MOVIES", idOfMovies);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(), "Please wait until movies have been loaded.", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
