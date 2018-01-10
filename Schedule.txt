@@ -26,7 +26,11 @@ MovieActiviy:
 	-Change Title
 	-Open activity with movies of a genre
 
+-ActorActivity
+	-Filme nach beliebtheit sortieren 
+
 Bugs:
 - [X] [MainActivity] RecyclerView verursacht absturz.
 	Mögliche Ursache: RecyclerView wird für jede Kategorie neu erstellt.		
 - [MovieActivity] Add-Button is changed too slowly. 	
+- [MovieActivity] Wenn Schauspieler zu spät läd wird bild nicht angezeigt.

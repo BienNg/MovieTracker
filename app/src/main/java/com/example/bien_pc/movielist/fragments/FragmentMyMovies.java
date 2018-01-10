@@ -39,7 +39,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This Fragment shows the movies that the user has seen
@@ -137,16 +141,17 @@ public class FragmentMyMovies extends Fragment {
             }
         }
 
-        // Adding the categoires to a list
+
+        // Adding the categoires to the list
         ArrayList<Category> categoriesWithContent = new ArrayList<>();
         if (comedyMovies.size() > 0) {
-            categoriesWithContent.add(new Category("Comedy", comedyMovies));
+            categoriesWithContent.add(new Category("Comedy", sortByYear(comedyMovies)));
         }
         if (dramaMovies.size() > 0) {
-            categoriesWithContent.add(new Category("Drama", dramaMovies));
+            categoriesWithContent.add(new Category("Drama", sortByYear(dramaMovies)));
         }
         if (categoriesWithContent.size() > 0) {
-            categoriesWithContent.add(new Category("Horror", horrorMovies));
+            categoriesWithContent.add(new Category("Horror", sortByYear(horrorMovies)));
         }
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_mymovies_rv_categories);
@@ -157,6 +162,42 @@ public class FragmentMyMovies extends Fragment {
         // nuggetsList is an ArrayList of Custom Objects, in this case  Nugget.class
         adapter = new CategoryAdapter(getContext(), categoriesWithContent);
         categoriesRecyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Sorts a list by date and returns the sorted list.
+     * @param list
+     * @return
+     */
+    private ArrayList<Movie> sortByYear(ArrayList<Movie> list){
+        ArrayList<Movie> sortedList = new ArrayList<>();
+        for(Movie movie : list){
+            String year = movie.getYear();
+            DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+
+            try {
+                Date date1 = format.parse(year);
+                if(sortedList.isEmpty()){
+                    sortedList.add(movie);
+                }else{
+                    for (int i = 0; i < sortedList.size(); i++) {
+                        Date date2 = format.parse(sortedList.get(i).getYear());
+                        if(date2.before(date1)){
+                            sortedList.add(i,movie);
+                            break;
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e(TAG, "sortByYear: some error idk.", e );
+                return list;
+            }
+        }
+        for (Movie m : sortedList){
+            Log.d(TAG, "sortByYear: movie date ::: " + m.getYear());
+        }
+        return sortedList;
     }
 
     private void updateRecyclerUI(final View view) {
@@ -206,7 +247,6 @@ public class FragmentMyMovies extends Fragment {
                             JsonParser jsonParser = new JsonParser(result);
                             Movie movie = jsonParser.getMovie();
                             mySeenMovies.add(movie);
-                            Log.d(TAG, "onResponse: mySeenMovies size ::: " + mySeenMovies.size());
                             if (mySeenMovies.size() == idOfMovies.size()) {
                                 setUpRecyclerView(view);
                             }
