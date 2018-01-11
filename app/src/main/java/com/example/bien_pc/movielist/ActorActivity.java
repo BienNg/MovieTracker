@@ -157,8 +157,11 @@ public class ActorActivity extends AppCompatActivity {
 
     }
 
+    /** [RecyclerView]
+     * Setting up the RecyclerView with the credits of the actor
+     * @param credits
+     */
     private void setCreditViewsFromActor(ArrayList<Movie> credits){
-
         int numberOfColumns = 3;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));

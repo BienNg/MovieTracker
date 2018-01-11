@@ -3,14 +3,16 @@ package com.example.bien_pc.movielist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.adapters.AdapterStatisticsGenre;
 import com.example.bien_pc.movielist.helper.JsonParser;
 import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
@@ -26,17 +28,28 @@ public class StatisticActivity extends AppCompatActivity {
     private final String TAG = "StatisticsActivity";
     private ArrayList<Movie> seenMovies = new ArrayList<>();
 
+    // Views
+    private RecyclerView rvGenres;
+    private CardView cardViewTotal;
+    TextView txtTotalCounter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic);
         Intent intent = getIntent();
+
+        // Init. Views
+        rvGenres = (RecyclerView) findViewById(R.id.statistics_rv_genres);
+        cardViewTotal = (CardView) findViewById(R.id.statistics_cardview_total);
+        txtTotalCounter = (TextView) findViewById(R.id.statistics_txt_total_counter);
+
         ArrayList<String> idOfMovies = intent.getStringArrayListExtra("ID_OF_MOVIES");
         updateStatistics(idOfMovies);
     }
 
 
-    /**
+    /** [Genre Statistics]
      * Gets ID of movies and returns their Movie Objects in a list.
      * @param idOfMovies
      * @return
@@ -78,8 +91,8 @@ public class StatisticActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Gets a list of Movies and splits them into different lists of genres.
+    /** [Genre Statistics]
+     * Gets a list of all seen Movies and splits them into different lists of genres.
      * @param movies
      */
     private void splitMoviesInGenres(ArrayList<Movie> movies){
@@ -100,19 +113,22 @@ public class StatisticActivity extends AppCompatActivity {
             }
         }
 
-        String[] listViewItems = new String[mapOfGenres.size()+1];
-        listViewItems[0] = "Total: " + movies.size();
-        int counter = 1;
-        // Printing the hashmap
-        for (String genre: mapOfGenres.keySet()){
-            String listviewItemText = genre + " : " + mapOfGenres.get(genre).size();
-            listViewItems[counter] = listviewItemText;
-            counter++;
-        }
+        txtTotalCounter.setText(movies.size()+"");
 
-        // Inflating the listview
-        ListAdapter listAdapter = new ArrayAdapter<String>(this, R.layout.item_listview_statistics, listViewItems);
-        ListView listViewStatistics = (ListView) findViewById(R.id.statistics_listview);
-        listViewStatistics.setAdapter(listAdapter);
+        // Setting up the RecyclerView
+        setRecyclerViewGenres(mapOfGenres);
+    }
+
+
+    /**
+     * Sets up the RecyclerView with the parameters:
+     * @param mapOfGenres
+     */
+    private void setRecyclerViewGenres(HashMap<String , ArrayList<Movie>> mapOfGenres){
+        int numberOfColumns = 3;
+        rvGenres.setHasFixedSize(true);
+        rvGenres.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        AdapterStatisticsGenre adapterStatisticsGenre = new AdapterStatisticsGenre(this, mapOfGenres);
+        rvGenres.setAdapter(adapterStatisticsGenre);
     }
 }
