@@ -1,19 +1,26 @@
 package com.example.bien_pc.movielist;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.bien_pc.movielist.fragments.FragmentHome;
 import com.example.bien_pc.movielist.fragments.FragmentMyMovies;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements FragmentHome.OnFragmentInteractionListener{
 
     private final String TAG = "MainActivity";
+    // Popup Dialog of the user
+    Dialog dialogUserPopup;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,11 +67,52 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         fragmentTransaction.replace(R.id.flContent, fragmentHome, "FragmentName");
         fragmentTransaction.commit();
 
+        // Init. Dialog Popup of the user
+        dialogUserPopup = new Dialog(this);
+
     }
 
 
+    /**
+     * Inflates the menu xml
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main_activity, menu);
+        return true;
+    }
+
+    /**
+     * Click Listener for the menu items.
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menuitem_user:
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                if(mAuth == null) {
+                    Intent intent = new Intent(this, SignIn.class);
+                    startActivity(intent);
+                }else{
+                    showPopup();
+                }
+                return true;
+            default:return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // Shows the pop up window of the user
+    private void showPopup(){
+        dialogUserPopup.setContentView(R.layout.popup_user);
+        dialogUserPopup.show();
+    }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 }

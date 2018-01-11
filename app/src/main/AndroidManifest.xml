@@ -26,7 +26,7 @@
         </activity>
         <activity
             android:name=".MovieActivity"
-            android:label="android.app.default_searchable"
+            android:label="Movie"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SignIn" />
