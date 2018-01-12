@@ -57,20 +57,21 @@ public class MovieActivity extends AppCompatActivity {
     private static ViewPager viewPager;
     private static ViewpagerAdapter viewpagerAdapter;
     private TextView textReleaseYear, textGenres, textDescription, textRating;
-    private ImageView imagePoster;
+    private ImageView imagePoster, bttnFavorite;
     private static ImageButton bttnAdd;
     private static LinearLayout layoutRating;
     private CardView cardViewRelatedMovies;
 
     // Variables for the collection RecyclerViews
-    private  static MoviesAdapter adapterRelatedMovies;
-    private  static ActorsAdapter adapterActors;
+    private static MoviesAdapter adapterRelatedMovies;
+    private static ActorsAdapter adapterActors;
     private static RecyclerView rvRelatedMovies, rvActors;
     private ArrayList<Actor> listActors = new ArrayList<>();
 
 
     /**
      * Getting the movie id
+     *
      * @param savedInstanceState
      */
     @Override
@@ -96,15 +97,17 @@ public class MovieActivity extends AppCompatActivity {
         textGenres = (TextView) findViewById(R.id.mv_text_genres);
         textDescription = (TextView) findViewById(R.id.mv_text_description);
         textRating = (TextView) findViewById(R.id.mv_text_rating);
-        imagePoster= (ImageView) findViewById(R.id.mv_image_poster);
+        imagePoster = (ImageView) findViewById(R.id.mv_image_poster);
         rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_related_movies);
         rvActors = (RecyclerView) findViewById(R.id.mv_rv_cast);
         layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
         cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
-
-        // Setting up the Add Button
+        bttnFavorite = (ImageView) findViewById(R.id.mv_bttn_fav);
         bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
+
+        // Setting up Buttons
         setUpAddButton();
+        setUpFavButton();
 
         // Setting up ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
@@ -114,7 +117,7 @@ public class MovieActivity extends AppCompatActivity {
         getMovieInformationForUi();
     }
 
-    private void getMovieInformationForUi(){
+    private void getMovieInformationForUi() {
         MDBUrls mdbUrls = new MDBUrls();
         String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -146,9 +149,10 @@ public class MovieActivity extends AppCompatActivity {
 
     /**
      * Updates the views of the activity.
+     *
      * @param movie
      */
-    private void updateUI(final Movie movie){
+    private void updateUI(final Movie movie) {
         // Set the title of the activity
         title = movie.getTitle();
         activity.setTitle(movie.getTitle());
@@ -158,17 +162,17 @@ public class MovieActivity extends AppCompatActivity {
 
         //Set the genres of the movie
         String genres = "";
-        for(String genre : movie.getGenres()){
-            if(genres.equals("")){
+        for (String genre : movie.getGenres()) {
+            if (genres.equals("")) {
                 genres = genre;
-            }else{
+            } else {
                 genres = genres + ", " + genre;
             }
         }
         textGenres.setText(genres);
 
         // Setting poster image if there is a poster url
-        if(movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()){
+        if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) {
             Picasso.with(context).load(movie.getPosterPath()).into(imagePoster, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -190,18 +194,69 @@ public class MovieActivity extends AppCompatActivity {
         textDescription.setText(movie.getDescription());
 
         // Setting up the related movies recycler view
-        if (movie.getCollectionId() != 0){
+        if (movie.getCollectionId() != 0) {
             cardViewRelatedMovies.setVisibility(View.VISIBLE);
             MDBUrls controller = new MDBUrls();
             controller.getCollection(movie.getId(), movie.getCollectionId());
-        }else{
+        } else {
             cardViewRelatedMovies.setVisibility(View.GONE);
         }
 
         // Setting up the actors recycler view
         setupRecyclerViewActors();
+    }
 
+    private void setUpFavButton() {
+        if (mAuth != null) {
+            // Getting reference to the database
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            // Check if user is logged in
+            final FirebaseUser currentUser = mAuth.getCurrentUser();
+            final String email = currentUser.getEmail().replace(".", "(dot)");
+            DatabaseReference databaseReference = database.getReference(email).child("movies");
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild(id + "")) {
+                        bttnFavorite.setImageResource(R.drawable.ic_favorite_full);
+                        bttnFavorite.setTag("is_fav");
+                    }else{
+                        bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
+                        bttnFavorite.setTag("not_fav");
+                    }
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+
+            bttnFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(bttnFavorite.getTag().equals("not_seen")){
+                        bttnFavorite.setImageResource(R.drawable.ic_favorite_full);
+                        bttnFavorite.setTag("seen");
+                        bttnAdd.setImageResource(R.drawable.ic_seen);
+                        bttnAdd.setTag("seen");
+                        // Add a id to the database
+                        DatabaseReference myRefTitle = database.getReference(email).child("movies").child(id + "").child("title");
+                        myRefTitle.setValue(title);
+                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("favorite");
+                        myRef.setValue("true");
+                    }else{
+                        bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
+                        bttnFavorite.setTag("not_seen");
+                        // Delete fav
+                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("favorite");
+                        myRef.setValue(null);
+                    }
+                }
+            });
+        }else{
+            bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
+            bttnFavorite.setTag("not_fav");
+        }
     }
 
     /**
@@ -209,55 +264,53 @@ public class MovieActivity extends AppCompatActivity {
      * - Clicking on Add should add the movie id to the firebase database.
      * - Clicking on Seen should remove the movie id from the firebase database.
      */
-    private void setUpAddButton(){
+    private void setUpAddButton() {
         // Getting reference to the database
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         // Check if user is logged in
         final FirebaseUser currentUser = mAuth.getCurrentUser();
         final String email = currentUser.getEmail().replace(".", "(dot)");
 
         // Check if user has already seen the movie.
         // Change icon to seen if yes
-        if(currentUser != null){
+        if (currentUser != null) {
             DatabaseReference databaseReference = database.getReference(email).child("movies");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.hasChild(id+"")) {
+                    if (snapshot.hasChild(id + "")) {
                         bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
                     }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         }
-
 
         bttnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: " + bttnAdd.getTag());
-                if(bttnAdd.getTag().equals("add")){
-                    if(currentUser != null){
+                if (bttnAdd.getTag().equals("add")) {
+                    if (currentUser != null) {
                         bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
                         // Add a id to the database
-                        DatabaseReference myRef = database.getReference(email).child("movies").child(id+"");
+                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("title");
                         myRef.setValue(title);
-                    }else{
+                    } else {
                         Intent intent = new Intent(MovieActivity.context, SignIn.class);
                         startActivity(intent);
                     }
-                }else{
+                } else {
                     bttnAdd.setImageResource(R.drawable.ic_add);
                     bttnAdd.setTag("add");
+                    bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
+                    bttnFavorite.setTag("not_fav");
                     // Delete id
-                    DatabaseReference myRef = database.getReference(email).child("movies").child(id+"");
+                    DatabaseReference myRef = database.getReference(email).child("movies").child(id + "");
                     myRef.setValue(null);
 
                 }
@@ -267,15 +320,16 @@ public class MovieActivity extends AppCompatActivity {
 
     /**
      * Gets list of related movies and updates the related movies recycler view
+     *
      * @param list
      */
-    public static void updateRelatedMoviesRV(ArrayList<Movie> list){
+    public static void updateRelatedMoviesRV(ArrayList<Movie> list) {
 
         // Setting up the Recycler View of the related Movies
         rvRelatedMovies.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvRelatedMovies.setLayoutManager(llm);
-        adapterRelatedMovies = new MoviesAdapter(context,list);
+        adapterRelatedMovies = new MoviesAdapter(context, list);
         rvRelatedMovies.setAdapter(adapterRelatedMovies);
     }
 
@@ -285,7 +339,7 @@ public class MovieActivity extends AppCompatActivity {
      * First: gets all the actors.
      * Second: updates the recyclerview.
      */
-    private void setupRecyclerViewActors(){
+    private void setupRecyclerViewActors() {
         // Getting URL of the actors
         MDBUrls mdbUrls = new MDBUrls();
         String actorsUrl = mdbUrls.generateActorsListUrl(id);
@@ -319,25 +373,25 @@ public class MovieActivity extends AppCompatActivity {
 
     }
 
-    private void initRecyclerViewActors(){
-        for(Actor actor : listActors){
+    private void initRecyclerViewActors() {
+        for (Actor actor : listActors) {
             Log.d(TAG, "initRecyclerViewActors: actor ::: " + actor.getName());
         }
         rvActors.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvActors.setLayoutManager(linearLayoutManager);
         adapterActors = new ActorsAdapter(context, listActors);
         rvActors.setAdapter(adapterActors);
     }
 
-    public static void updateVisibility(){
+    public static void updateVisibility() {
 
         // Set Visibility of the views if the information is not given
-        if(viewpagerAdapter.getCount() == 0){
+        if (viewpagerAdapter.getCount() == 0) {
             viewPager.setVisibility(View.GONE);
             bttnAdd.setVisibility(View.GONE);
             layoutRating.setVisibility(View.GONE);
-        }else{
+        } else {
             viewPager.setVisibility(View.VISIBLE);
             bttnAdd.setVisibility(View.VISIBLE);
             layoutRating.setVisibility(View.VISIBLE);

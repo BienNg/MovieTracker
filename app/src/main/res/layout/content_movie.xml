@@ -58,6 +58,14 @@
                         android:layout_marginRight="6dp"
                         android:text="genres"
                         android:textColor="@color/text_color1" />
+
+                    <ImageView
+                        android:id="@+id/mv_bttn_fav"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:src="@drawable/ic_favorite_empty"/>
+
                 </LinearLayout>
 
                 <LinearLayout

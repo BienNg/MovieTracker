@@ -55,6 +55,7 @@ public class FragmentMyMovies extends Fragment {
     private final String TAG = "FragmentMyMovies";
     private ArrayList<Movie> mySeenMovies = new ArrayList<>();
     private final ArrayList<String> idOfMovies = new ArrayList<>();
+    private final ArrayList<String> favMovies = new ArrayList<>();
     private CategoryAdapter adapter;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -123,6 +124,25 @@ public class FragmentMyMovies extends Fragment {
         // This map contains the genre as key and their movies as value
         HashMap<String, ArrayList<Movie>> mapCategories = new HashMap<>();
 
+        // Setting up Category Favorite Movies
+        if(favMovies.size() > 0){
+            for(String id : favMovies){
+                for(Movie movie : mySeenMovies){
+                    if(id.equals(movie.getId() + "") && !mapCategories.containsKey("Favorites")){
+                        ArrayList<Movie> list = new ArrayList<>();
+                        list.add(movie);
+                        mapCategories.put("Favorites", list);
+                        break;
+                    }else if (id.equals(movie.getId() + "")){
+                        ArrayList<Movie> list = mapCategories.get("Favorites");
+                        list.add(movie);
+                        mapCategories.put("Favorites", list);
+                        break;
+                    }
+                }
+            }
+        }
+
         // Filling the categories with movies
         for (Movie movie : mySeenMovies){
             for(String genre : movie.getGenres()){
@@ -140,10 +160,11 @@ public class FragmentMyMovies extends Fragment {
 
         // Adding the categoires to the list
         ArrayList<Category> categoriesWithContent = new ArrayList<>();
+        categoriesWithContent.add(new Category("Favorites", sortByYear(mapCategories.get("Favorites"))));
 
         // Adding every genre to the RecyclerView that has more than 9 movies
         for(String genre : mapCategories.keySet()){
-            if(mapCategories.get(genre).size() > 9){
+            if(mapCategories.get(genre).size() > 9 && !genre.equals("Favorites")){
                 categoriesWithContent.add(new Category(genre, sortByYear(mapCategories.get(genre))));
             }
         }
@@ -204,6 +225,8 @@ public class FragmentMyMovies extends Fragment {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String email = currentUser.getEmail().replace(".", "(dot)");
+
+        // Getting list of seen movies from firebase
         DatabaseReference databaseReference = database.getReference(email).child("movies");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -211,6 +234,9 @@ public class FragmentMyMovies extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String id = snapshot.getKey();
                     idOfMovies.add(id);
+                    if(snapshot.hasChild("favorite")){
+                        favMovies.add(id);
+                    }
                 }
                 fillMySeenMoviesList(idOfMovies, view);
             }
@@ -223,7 +249,7 @@ public class FragmentMyMovies extends Fragment {
     }
 
     /**
-     * Getting the movie objects from the data base
+     * Getting the movie objects from the data base and adds them to mySeenMovies
      * @param idOfMovies
      * @param view
      */
