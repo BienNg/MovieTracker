@@ -23,7 +23,6 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.RequestObject;
 import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 
 import org.json.JSONObject;
@@ -89,10 +88,10 @@ public class FragmentHome extends Fragment {
         setUpRecyclerView(view);
 
         //Requesting Movies that fill the RecyclerViews
-        requestOperation(view, new RequestObject("Popular Movies"));
-        requestOperation(view, new RequestObject("Comedy Movies"));
-        requestOperation(view, new RequestObject("Drama Movies"));
-        requestOperation(view, new RequestObject("Horror Movies"));
+        requestOperation(view, "Popular Movies");
+        requestOperation(view, "Comedy Movies");
+        requestOperation(view, "Drama Movies");
+        requestOperation(view, "Horror Movies");
     }
 
     /**
@@ -124,7 +123,7 @@ public class FragmentHome extends Fragment {
      * This method gets a requestObject which contains the information what request is queued
      * e.g. List of popular Movies, search for movie title etc.
      */
-    private void requestOperation(final View view, final RequestObject requestObject){
+    private void requestOperation(final View view, final String requestObject){
         Log.d(TAG, "requestOperation: reached.");
         class RequestOperation extends AsyncTask<String, Void, String> {
 
@@ -146,16 +145,16 @@ public class FragmentHome extends Fragment {
                             public void onResponse(JSONObject response) {
                                 String result = response.toString();
                                 JsonParser jsonParser = new JsonParser(result);
-                                if(requestObject.getRequest().equals("Popular Movies")){
+                                if(requestObject.equals("Popular Movies")){
                                     popularMovies = jsonParser.getList();
                                     listOfMovies.put("Popular Movies", popularMovies);
-                                }else if (requestObject.getRequest().equals("Comedy Movies")){
+                                }else if (requestObject.equals("Comedy Movies")){
                                     comedyMovies = jsonParser.getList();
                                     listOfMovies.put("Comedy Movies", comedyMovies);
-                                }else if (requestObject.getRequest().equals("Drama Movies")){
+                                }else if (requestObject.equals("Drama Movies")){
                                     dramaMovies = jsonParser.getList();
                                     listOfMovies.put("Drama Movies", dramaMovies);
-                                }else if (requestObject.getRequest().equals("Horror Movies")){
+                                }else if (requestObject.equals("Horror Movies")){
                                     horrorMovies = jsonParser.getList();
                                     listOfMovies.put("Horror Movies", horrorMovies);
                                 }

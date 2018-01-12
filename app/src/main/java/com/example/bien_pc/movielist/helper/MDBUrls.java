@@ -9,7 +9,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.MovieActivity;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.RequestObject;
 
 import org.json.JSONObject;
 
@@ -25,14 +24,14 @@ public class MDBUrls {
     private final String URL = "https://api.themoviedb.org/3";
     private final String API_KEY = "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
     private final String TAG = "MDBUrls";
-    private RequestObject requestObject;
+    private String requestObject;
     private Context mContext;
 
     /**
      * Constructor for requests.
      * @param requestObject
      */
-    public MDBUrls(RequestObject requestObject) {
+    public MDBUrls(String requestObject) {
         this.requestObject = requestObject;
     }
 
@@ -56,16 +55,16 @@ public class MDBUrls {
     public String getUrl(){
         String result;
 
-        if(requestObject.getRequest().equals("Popular Movies")){
+        if(requestObject.equals("Popular Movies")){
             result = generatePopularMoviesUrl();
         }
-        else if(requestObject.getRequest().equals("Comedy Movies")){
+        else if(requestObject.equals("Comedy Movies")){
             result = generateComedyMoviesUrl();
         }
-        else if(requestObject.getRequest().equals("Drama Movies")){
+        else if(requestObject.equals("Drama Movies")){
             result = generateDramaMoviesUrl();
         }
-        else if(requestObject.getRequest().equals("Horror Movies")){
+        else if(requestObject.equals("Horror Movies")){
             result = generateHorrorMoviesUrl();
         }else{
             result = "Error: Wrong Request";

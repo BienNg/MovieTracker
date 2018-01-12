@@ -2,18 +2,23 @@ package com.example.bien_pc.movielist;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.bien_pc.movielist.fragments.FragmentHome;
 import com.example.bien_pc.movielist.fragments.FragmentMyMovies;
+import com.example.bien_pc.movielist.helper.OnSwipeTouchListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements FragmentHome.OnFragmentInteractionListener{
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         // Init. Dialog Popup of the user
         dialogUserPopup = new Dialog(this);
 
+
     }
 
 
@@ -101,6 +107,28 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 }else{
                     showPopup();
                 }
+                return true;
+            case R.id.menuitem_lightning:
+                final View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.dialog_movie, null);
+                view.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+                    public void onSwipeTop() {
+                        Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
+                    }
+                    public void onSwipeRight() {
+                        Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+                    }
+                    public void onSwipeLeft() {
+                        Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+                    }
+                    public void onSwipeBottom() {
+                        Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
+                        view.animate().translationY(5000);
+                    }
+                });
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(view);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.show();
                 return true;
             default:return super.onOptionsItemSelected(item);
         }
