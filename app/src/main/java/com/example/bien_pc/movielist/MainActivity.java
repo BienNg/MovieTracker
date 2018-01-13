@@ -166,119 +166,12 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      */
     private void startLightningFeature() {
         counter++;
+        if(randomMovies.size() - counter < 5){
+            counter = 0;
+        }
         final Dialog dialog = new Dialog(MainActivity.this);
         view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.dialog_movie, null);
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        view.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
-            public void onSwipeTop() {
-                view.animate().translationY(-5000).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        fab.setImageResource(R.drawable.ic_add);
-                        fab.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
-                        fab.animate()
-                                .scaleYBy(2)
-                                .scaleXBy(2)
-                                .setDuration(500)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                startLightningFeature();
-                                                updateDialogUI();
-                                            }
-                                        });
-                                    }
-                                });
-                    }
-                });
-            }
-
-            public void onSwipeRight() {
-                view.animate().translationX(5000).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        fab.setImageResource(R.drawable.ic_seen);
-                        fab.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
-                        fab.animate()
-                                .scaleYBy(2)
-                                .scaleXBy(2)
-                                .setDuration(500)
-                                .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startLightningFeature();
-                                        updateDialogUI();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-            public void onSwipeLeft() {
-                view.animate().translationX(-5000).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        fab.setImageResource(R.drawable.ic_block);
-                        fab.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
-                        fab.animate()
-                                .scaleYBy(2)
-                                .scaleXBy(2)
-                                .setDuration(500)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                startLightningFeature();
-                                                updateDialogUI();
-                                            }
-                                        });
-                                    }
-                                });
-                    }
-                });
-            }
-
-            public void onSwipeBottom() {
-                view.animate().translationY(5000).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        fab.setImageResource(R.drawable.ic_favorite_full);
-                        fab.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
-                        fab.animate()
-                                .scaleYBy(2)
-                                .scaleXBy(2)
-                                .setDuration(500)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                startLightningFeature();
-                                                updateDialogUI();
-                                            }
-                                        });
-                                    }
-                                });
-                    }
-                });
-            }
-        });
-
+        setViewOnTouch(dialog);
         dialog.setContentView(view);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.show();
@@ -335,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                                     }
                                 }
 
-                                // Update Dialog UI
+                                // - 4- Update Dialog UI
                                 updateDialogUI();
                             }
                         }, new Response.ErrorListener() {
@@ -407,6 +300,10 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
     }
 
+    /**
+     * Updates the RecyclerView
+     * @param actors
+     */
     private void updateRecyclerViewCast(ArrayList<Actor> actors){
         RecyclerView rvCast = (RecyclerView) view.findViewById(R.id.dialog_lightning_rv_cast);
         rvCast.setHasFixedSize(true);
@@ -414,5 +311,126 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         rvCast.setLayoutManager(linearLayoutManager);
         ActorsAdapter adapterActors = new ActorsAdapter(MainActivity.this, actors);
         rvCast.setAdapter(adapterActors);
+    }
+
+    /**
+     * Sets Up the feedback after swiping the dialog away.
+     * @param dialog
+     */
+    private void setViewOnTouch(final Dialog dialog){
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.animate().scaleY(0).scaleX(0);
+        view.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+            public void onSwipeTop() {
+                view.animate().translationY(-5000).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                    }
+                });
+                fab.setImageResource(R.drawable.ic_add);
+                fab.setVisibility(View.VISIBLE);
+                fab.animate()
+                        .scaleYBy(1.2f)
+                        .scaleXBy(1.2f)
+                        .setDuration(500)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startLightningFeature();
+                                        updateDialogUI();
+                                    }
+                                });
+                            }
+                        });
+            }
+
+            public void onSwipeRight() {
+                view.animate().translationX(5000).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                    }
+                });
+
+                fab.setImageResource(R.drawable.ic_seen);
+                fab.setVisibility(View.VISIBLE);
+                fab.animate()
+                        .scaleYBy(1.2f)
+                        .scaleXBy(1.2f)
+                        .setDuration(500)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startLightningFeature();
+                                        updateDialogUI();
+                                    }
+                                });
+                            }
+                        });
+            }
+
+            public void onSwipeLeft() {
+                view.animate().translationX(-5000).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+
+                    }
+                });
+                fab.setImageResource(R.drawable.ic_block);
+                fab.setVisibility(View.VISIBLE);
+                fab.animate()
+                        .scaleYBy(1.2f)
+                        .scaleXBy(1.2f)
+                        .setDuration(500)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startLightningFeature();
+                                        updateDialogUI();
+                                    }
+                                });
+                            }
+                        });
+            }
+
+            public void onSwipeBottom() {
+                view.animate().translationY(5000).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+
+                    }
+                });
+                fab.setImageResource(R.drawable.ic_favorite_full);
+                fab.setVisibility(View.VISIBLE);
+                fab.animate()
+                        .scaleYBy(1.2f)
+                        .scaleXBy(1.2f)
+                        .setDuration(500)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startLightningFeature();
+                                        updateDialogUI();
+                                    }
+                                });
+                            }
+                        });
+            }
+        });
     }
 }
