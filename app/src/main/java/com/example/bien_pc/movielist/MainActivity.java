@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -167,14 +168,31 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         counter++;
         final Dialog dialog = new Dialog(MainActivity.this);
         view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.dialog_movie, null);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         view.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop() {
                 view.animate().translationY(-5000).withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        fab.setImageResource(R.drawable.ic_add);
+                        fab.setVisibility(View.VISIBLE);
                         dialog.dismiss();
-                        startLightningFeature();
-                        updateDialogUI();
+                        fab.animate()
+                                .scaleYBy(2)
+                                .scaleXBy(2)
+                                .setDuration(500)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                startLightningFeature();
+                                                updateDialogUI();
+                                            }
+                                        });
+                                    }
+                                });
                     }
                 });
             }
@@ -183,9 +201,25 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 view.animate().translationX(5000).withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        fab.setImageResource(R.drawable.ic_seen);
+                        fab.setVisibility(View.VISIBLE);
                         dialog.dismiss();
-                        startLightningFeature();
-                        updateDialogUI();
+                        fab.animate()
+                                .scaleYBy(2)
+                                .scaleXBy(2)
+                                .setDuration(500)
+                                .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startLightningFeature();
+                                        updateDialogUI();
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -194,9 +228,25 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 view.animate().translationX(-5000).withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        fab.setImageResource(R.drawable.ic_block);
+                        fab.setVisibility(View.VISIBLE);
                         dialog.dismiss();
-                        startLightningFeature();
-                        updateDialogUI();
+                        fab.animate()
+                                .scaleYBy(2)
+                                .scaleXBy(2)
+                                .setDuration(500)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                startLightningFeature();
+                                                updateDialogUI();
+                                            }
+                                        });
+                                    }
+                                });
                     }
                 });
             }
@@ -205,9 +255,25 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 view.animate().translationY(5000).withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        fab.setImageResource(R.drawable.ic_favorite_full);
+                        fab.setVisibility(View.VISIBLE);
                         dialog.dismiss();
-                        startLightningFeature();
-                        updateDialogUI();
+                        fab.animate()
+                                .scaleYBy(2)
+                                .scaleXBy(2)
+                                .setDuration(500)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        fab.animate().scaleY(0).scaleX(0).withEndAction(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                startLightningFeature();
+                                                updateDialogUI();
+                                            }
+                                        });
+                                    }
+                                });
                     }
                 });
             }
