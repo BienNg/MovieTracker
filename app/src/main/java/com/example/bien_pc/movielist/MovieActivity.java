@@ -65,7 +65,7 @@ public class MovieActivity extends AppCompatActivity {
     // Variables for the collection RecyclerViews
     private static MoviesAdapter adapterRelatedMovies;
     private static ActorsAdapter adapterActors;
-    private static RecyclerView rvRelatedMovies, rvActors;
+    private static RecyclerView rvRelatedMovies, rvCast;
     private ArrayList<Actor> listActors = new ArrayList<>();
 
 
@@ -99,7 +99,7 @@ public class MovieActivity extends AppCompatActivity {
         textRating = (TextView) findViewById(R.id.mv_text_rating);
         imagePoster = (ImageView) findViewById(R.id.mv_image_poster);
         rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_related_movies);
-        rvActors = (RecyclerView) findViewById(R.id.mv_rv_cast);
+        rvCast = (RecyclerView) findViewById(R.id.mv_rv_cast);
         layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
         cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
         bttnFavorite = (ImageView) findViewById(R.id.mv_bttn_fav);
@@ -342,7 +342,7 @@ public class MovieActivity extends AppCompatActivity {
     private void setupRecyclerViewActors() {
         // Getting URL of the actors
         MDBUrls mdbUrls = new MDBUrls();
-        String actorsUrl = mdbUrls.generateActorsListUrl(id);
+        String actorsUrl = mdbUrls.generateCastListUrl(id);
         Log.d(TAG, "setupRecyclerViewActors: actorsUrl ::: " + actorsUrl);
         // Getting list of actors
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -374,14 +374,11 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     private void initRecyclerViewActors() {
-        for (Actor actor : listActors) {
-            Log.d(TAG, "initRecyclerViewActors: actor ::: " + actor.getName());
-        }
-        rvActors.setHasFixedSize(true);
+        rvCast.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-        rvActors.setLayoutManager(linearLayoutManager);
+        rvCast.setLayoutManager(linearLayoutManager);
         adapterActors = new ActorsAdapter(context, listActors);
-        rvActors.setAdapter(adapterActors);
+        rvCast.setAdapter(adapterActors);
     }
 
     public static void updateVisibility() {

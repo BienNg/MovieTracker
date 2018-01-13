@@ -52,6 +52,7 @@ public class JsonParser {
             for (int i = 0; i < json.getJSONArray("results").length(); i++) {
                 JSONObject movie = json.getJSONArray("results").getJSONObject(i);
                 Movie movieObject = new Movie(movie.getInt("id"), movie.getString("title"));
+                movieObject.setRating(movie.getString("vote_average"));
                 movieObject.setPosterPath(movie.getString("poster_path"));
                 list.add(movieObject);
 
@@ -235,5 +236,15 @@ public class JsonParser {
         }
 
         return credits;
+    }
+
+    public int getResultCount(){
+        try {
+            return json.getJSONArray("results").length();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "getResultCount: some error idk.");
+            return 0;
+        }
     }
 }

@@ -119,7 +119,7 @@ public class MDBUrls {
         return null;
     }
 
-    private String generatePopularMoviesUrl(){
+    public String generatePopularMoviesUrl(){
         return URL+"/movie/popular"+API_KEY;
     }
     private String generateComedyMoviesUrl(){
@@ -131,7 +131,7 @@ public class MDBUrls {
     private String generateHorrorMoviesUrl(){
         return URL+"/genre/27/movies"+API_KEY;
     }
-    public String generateActorsListUrl(int id){
+    public String generateCastListUrl(int id){
         return URL + "/movie/" + id + "/credits" + API_KEY;
     }
     public String generateActorInfoUrl(int id){
