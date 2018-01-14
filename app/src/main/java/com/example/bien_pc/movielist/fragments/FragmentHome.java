@@ -1,7 +1,6 @@
 package com.example.bien_pc.movielist.fragments;
 
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,6 +22,12 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -36,7 +41,7 @@ public class FragmentHome extends Fragment {
 
     //Variables
     private final String TAG = "FragmentHome";
-    private ArrayList<Movie> popularMovies, comedyMovies, dramaMovies, horrorMovies;
+    private ArrayList<Movie> popularMovies, comedyMovies, dramaMovies, horrorMovies, watchlistMovies;
     private CategoryAdapter adapter;
     private HashMap<String, ArrayList<Movie>> listOfMovies;
     private ArrayList<Category> categoriesWithContent;
@@ -87,16 +92,17 @@ public class FragmentHome extends Fragment {
         setUpRecyclerView(view);
 
         //Requesting Movies that fill the RecyclerViews
-        requestOperation(view, "Popular Movies");
-        requestOperation(view, "Comedy Movies");
-        requestOperation(view, "Drama Movies");
-        requestOperation(view, "Horror Movies");
+        getMovies(view, "Watchlist");
+        getMovies(view, "Popular Movies");
+        getMovies(view, "Comedy Movies");
+        getMovies(view, "Drama Movies");
+        getMovies(view, "Horror Movies");
     }
 
     /**
      * This method sets up the RecyclerView
      */
-    private void setUpRecyclerView(View view){
+    private void setUpRecyclerView(View view) {
         // Getting Categories
         getCategories();
 
@@ -114,85 +120,119 @@ public class FragmentHome extends Fragment {
      * This method gets a requestObject which contains the information what request is queued
      * e.g. List of popular Movies, search for movie title etc.
      */
-    private void requestOperation(final View view, final String requestObject){
-        Log.d(TAG, "requestOperation: reached.");
-        class RequestOperation extends AsyncTask<String, Void, String> {
+    private void getMovies(final View view, final String requestObject) {
+        Log.d(TAG, "getMovies: reached.");
+        // Generating the HTTP URL
+        final String url = new MDBUrls(requestObject).getUrl();
 
-            @Override
-            protected String doInBackground(String... strings) {
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                // Generating the HTTP URL
-                final String url = new MDBUrls(requestObject).getUrl();
+                    /**
+                     * This is the main part of the method.
+                     * Getting the Json String and pass it on to the JsonParser.
+                     * @param response
+                     */
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String result = response.toString();
+                        JsonParser jsonParser = new JsonParser(result);
+                        if (requestObject.equals("Popular Movies")) {
+                            popularMovies = jsonParser.getList();
+                            listOfMovies.put("Popular Movies", popularMovies);
+                        } else if (requestObject.equals("Comedy Movies")) {
+                            comedyMovies = jsonParser.getList();
+                            listOfMovies.put("Comedy Movies", comedyMovies);
+                        } else if (requestObject.equals("Drama Movies")) {
+                            dramaMovies = jsonParser.getList();
+                            listOfMovies.put("Drama Movies", dramaMovies);
+                        } else if (requestObject.equals("Horror Movies")) {
+                            horrorMovies = jsonParser.getList();
+                            listOfMovies.put("Horror Movies", horrorMovies);
+                        }
+                        setUpRecyclerView(view);
+                    }
 
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
 
-                            /**
-                             * This is the main part of the method.
-                             * Getting the Json String and pass it on to the JsonParser.
-                             * @param response
-                             */
+        // Getting watchlist Movies
+        if(FirebaseAuth.getInstance().getCurrentUser() != null && requestObject.equals("Watchlist")){
+            String email = FirebaseAuth.getInstance().getCurrentUser().getEmail().replace(".", "(dot)");
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(email).child("watchlist");
+            final ArrayList<String> watchlistIDs = new ArrayList<>();
+
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for( DataSnapshot d : dataSnapshot.getChildren()){
+                        watchlistIDs.add(d.getKey());
+                    }
+
+                    watchlistMovies = new ArrayList<>();
+                    for(String id : watchlistIDs){
+                        final String urlMovie = new MDBUrls().generateMovieDetailsUrl(Integer.parseInt(id));
+                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlMovie, null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                String result = response.toString();
-                                JsonParser jsonParser = new JsonParser(result);
-                                if(requestObject.equals("Popular Movies")){
-                                    popularMovies = jsonParser.getList();
-                                    listOfMovies.put("Popular Movies", popularMovies);
-                                }else if (requestObject.equals("Comedy Movies")){
-                                    comedyMovies = jsonParser.getList();
-                                    listOfMovies.put("Comedy Movies", comedyMovies);
-                                }else if (requestObject.equals("Drama Movies")){
-                                    dramaMovies = jsonParser.getList();
-                                    listOfMovies.put("Drama Movies", dramaMovies);
-                                }else if (requestObject.equals("Horror Movies")){
-                                    horrorMovies = jsonParser.getList();
-                                    listOfMovies.put("Horror Movies", horrorMovies);
+                                JsonParser jsonParser = new JsonParser(response.toString());
+                                watchlistMovies.add(jsonParser.getMovie());
+                                if(watchlistIDs.size() == watchlistMovies.size()){
+                                    setUpRecyclerView(view);
                                 }
-                                setUpRecyclerView(view);
                             }
-
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+
                             }
                         });
+                        // Access the RequestQueue through your singleton class.
+                        MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+                    }
+                }
 
-                // Access the RequestQueue through your singleton class.
-                MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
-                return "";
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+
         }
-        new RequestOperation().execute();
     }
 
-    private void getCategories(){
+    private void getCategories() {
         Log.d(TAG, "getCategories: reached.");
         listOfMovies = new HashMap<>();
         categoriesWithContent = new ArrayList<>();
+        listOfMovies.put("Watchlist", watchlistMovies);
         listOfMovies.put("Popular Movies", popularMovies);
         listOfMovies.put("Comedy Movies", comedyMovies);
         listOfMovies.put("Drama Movies", dramaMovies);
         listOfMovies.put("Horror Movies", horrorMovies);
 
-        if(popularMovies != null){
-            Log.d(TAG, "generateCategories: " + popularMovies.size());
+        if (watchlistMovies != null) {
+            Log.d(TAG, "getCategories: watchlistMovies size ::: " + watchlistMovies.size());
+            categoriesWithContent.add(new Category("Watchlist", watchlistMovies));
+        }
+
+        if (popularMovies != null) {
             categoriesWithContent.add(new Category("Popular", popularMovies));
         }
 
-        if(comedyMovies != null){
+        if (comedyMovies != null) {
             categoriesWithContent.add(new Category("Comedy", comedyMovies));
         }
-        if (dramaMovies != null){
+        if (dramaMovies != null) {
             categoriesWithContent.add(new Category("Drama", dramaMovies));
         }
-        if(horrorMovies != null){
+        if (horrorMovies != null) {
             categoriesWithContent.add(new Category("Horror", horrorMovies));
         }
     }
-
-
-
 
 
     @Override
@@ -201,12 +241,14 @@ public class FragmentHome extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fragment_home, container, false);
     }
+
     // IDK
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

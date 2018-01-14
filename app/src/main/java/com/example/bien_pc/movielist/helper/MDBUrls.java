@@ -146,6 +146,9 @@ public class MDBUrls {
     public String generateActorsCredits(int id){
         return URL + "/person/" + id + "/combined_credits" + API_KEY;
     }
+    public String generateMovieDetailsUrl(int id){
+        return URL + "/movie/" + id + API_KEY;
+    }
 
     public String getURL() {
         return URL;
