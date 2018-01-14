@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      */
     private void getLightningMovies() {
 
-        // -2- Generating the URL for the database.
+        // -1- Generating the URL for the database.
         final MDBUrls mdbUrls = new MDBUrls();
         String urlPopularMovies = mdbUrls.generatePopularMoviesUrlWithPage(pageCounter);
         Log.d(TAG, "getLightningMovies: urlPopularMovies ::: " + urlPopularMovies);
@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                                 Log.d(TAG, "getLightningMovies: getting top rated list done.");
 
 
-                                // -3- Removing Seen Movies from random movie list
+                                // -2- Removing Seen Movies from random movie list
                                 for (String seenMovie : markedMovies) {
                                     for (int i = 0; i < randomMovies.size(); i++) {
                                         if ((randomMovies.get(i).getId() + "").equals(seenMovie)) {
@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
                                 // If more than 10 Random movies are generated the UI should be uptdated with the first movie
                                 if(randomMovies.size() > 15){
-                                    // - 4- Update Dialog UI
+                                    // -3- Update Dialog UI
                                     updateDialogUI();
                                 }else{
                                     // Repeat getting movies with next page
@@ -332,9 +332,14 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      */
     private void updateDialogUI() {
         final Movie randomMovie = randomMovies.get(0);
+        // Init. Views
         ImageView imageMovie = (ImageView) view.findViewById(R.id.dialog_lightning_movie_image);
         TextView txtRating = (TextView) view.findViewById(R.id.dialog_lightning_rating);
+        TextView txtRelease = (TextView) view.findViewById(R.id.dialog_lightning_txt_release);
+
+        // Setting up views
         txtRating.setText(randomMovie.getRating());
+        txtRelease.setText(randomMovie.getYear());
 
         // Setting Movie Image
         Picasso.with(MainActivity.this).load(randomMovie.getPosterPath()).into(imageMovie, new Callback() {
@@ -347,6 +352,14 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
             public void onError() {
                 Log.d(TAG, "onError: image url ::: " + randomMovie.getPosterPath());
                 Log.d(TAG, "onError: poster not set. Some error idk.");
+            }
+        });
+        imageMovie.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+                intent.putExtra("ID", randomMovie.getId());
+                startActivity(intent);
             }
         });
 

@@ -59,11 +59,13 @@
                                     android:orientation="horizontal">
 
                                     <TextView
+                                        android:id="@+id/dialog_lightning_txt_release"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginRight="12dp"
                                         android:layout_gravity="center_vertical"
                                         android:text="release year"
-                                        android:textColor="@color/text_color2" />
+                                        android:textColor="@color/text_color2"/>
 
                                     <ImageView
                                         android:layout_width="wrap_content"

@@ -54,6 +54,7 @@ public class JsonParser {
                 Movie movieObject = new Movie(movie.getInt("id"), movie.getString("title"));
                 movieObject.setRating(movie.getString("vote_average"));
                 movieObject.setPosterPath(movie.getString("poster_path"));
+                movieObject.setYear(movie.getString("release_date"));
                 list.add(movieObject);
 
             }
