@@ -217,7 +217,7 @@ public class MovieActivity extends AppCompatActivity {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.hasChild(id + "") && snapshot.hasChild("favorite") && snapshot.child("favorite").equals("true")) {
+                    if (snapshot.hasChild(id + "") && snapshot.child(id+"").hasChild("favorite") && snapshot.child(id+"").child("favorite").getValue().equals("true")) {
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_full);
                         bttnFavorite.setTag("is_fav");
                     }else{

@@ -91,6 +91,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 }
             });
+        }else{
+            holder.movieImage.setImageDrawable(null);
         }
 
         //Setting click listener for the movie item
