@@ -122,6 +122,12 @@ public class MDBUrls {
     public String generatePopularMoviesUrl(){
         return URL+"/movie/popular"+API_KEY;
     }
+    public String generatePopularMoviesUrlWithPage(int page){
+        return URL + "/movie/popular" + API_KEY + "&page=" + page;
+    }
+    public String generateTopRatedMoviesUrlWithPage(int page){
+        return URL + "/movie/top_rated" + API_KEY + "&page=" + page;
+    }
     private String generateComedyMoviesUrl(){
         return URL+"/genre/35/movies"+API_KEY;
     }
