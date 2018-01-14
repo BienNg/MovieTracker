@@ -23,7 +23,6 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.test.classes.CategoriesGenerator;
 
 import org.json.JSONObject;
 
@@ -98,16 +97,8 @@ public class FragmentHome extends Fragment {
      * This method sets up the RecyclerView
      */
     private void setUpRecyclerView(View view){
-        Log.d(TAG, "setUpRecyclerView: reached.");
-        listOfMovies = new HashMap<>();
-        listOfMovies.put("Popular Movies", popularMovies);
-        listOfMovies.put("Comedy Movies", comedyMovies);
-        listOfMovies.put("Drama Movies", dramaMovies);
-        listOfMovies.put("Horror Movies", horrorMovies);
-
-        CategoriesGenerator cg = new CategoriesGenerator(listOfMovies);
-        //Categories List
-        categoriesWithContent = cg.generateCategories();
+        // Getting Categories
+        getCategories();
 
         RecyclerView categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.fm_home_rv_categories);
         // Setting RecyclerView
@@ -175,20 +166,47 @@ public class FragmentHome extends Fragment {
         new RequestOperation().execute();
     }
 
+    private void getCategories(){
+        Log.d(TAG, "getCategories: reached.");
+        listOfMovies = new HashMap<>();
+        categoriesWithContent = new ArrayList<>();
+        listOfMovies.put("Popular Movies", popularMovies);
+        listOfMovies.put("Comedy Movies", comedyMovies);
+        listOfMovies.put("Drama Movies", dramaMovies);
+        listOfMovies.put("Horror Movies", horrorMovies);
+
+        if(popularMovies != null){
+            Log.d(TAG, "generateCategories: " + popularMovies.size());
+            categoriesWithContent.add(new Category("Popular", popularMovies));
+        }
+
+        if(comedyMovies != null){
+            categoriesWithContent.add(new Category("Comedy", comedyMovies));
+        }
+        if (dramaMovies != null){
+            categoriesWithContent.add(new Category("Drama", dramaMovies));
+        }
+        if(horrorMovies != null){
+            categoriesWithContent.add(new Category("Horror", horrorMovies));
+        }
+    }
+
+
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_fragment_home, container, false);
     }
-
     // IDK
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
