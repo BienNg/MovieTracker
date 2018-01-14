@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 mAuth = FirebaseAuth.getInstance();
                 userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
                 startLightningFeature();
-                getLightningMovies();
+                getMarkedMovies();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
     // [Lightning Feature] Variables.
     private ArrayList<Movie> randomMovies = new ArrayList<>();
+    private ArrayList<String> markedMovies = new ArrayList<>();
     private View view;
     private int pageCounter = 1;
 
@@ -181,87 +182,131 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     }
 
     /**
-     * [LightningFeature]
-     * Getting the movies that are shown in the Lightning Dialog.
-     * Only show movies that are not in the users list yet.
-     * 1. Look for movies of the movies.
-     * 2. Get Random movies from the database.
-     * 3. Remove seen movies from those random movies.
-     * 4. Updated dialog UI
+     * 1. Gets every movie that is stored in the firebase database of the user.
+     * 2. getLightningMovies()
      */
-    private void getLightningMovies() {
+    private void getMarkedMovies(){
+        final ArrayList<Integer> firebaseCounter = new ArrayList<>();
 
-        // -1- Getting Firebase Database from current user.
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-        final ArrayList<String> seenMovies = new ArrayList<>();
+        // -1- Getting seen movies from current user.
+        DatabaseReference databaseReferenceMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
         // Getting his movies.
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReferenceMovies.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
                     String id = d.getKey();
-                    seenMovies.add(id);
-
+                    markedMovies.add(id);
+                    firebaseCounter.add(1);
+                    if(firebaseCounter.size() == 3){
+                        getLightningMovies();
+                    }
                 }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
-                // -2- Generating the URL for the database.
-                final MDBUrls mdbUrls = new MDBUrls();
-                String urlPopularMovies = mdbUrls.generatePopularMoviesUrlWithPage(pageCounter);
-                Log.d(TAG, "getLightningMovies: urlPopularMovies ::: " + urlPopularMovies);
+        // -2- Getting swiped movies from current user
+        DatabaseReference databaseReferenceSwipedMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
+        // Getting his movies.
+        databaseReferenceSwipedMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    String id = d.getKey();
+                    markedMovies.add(id);
+                    firebaseCounter.add(1);
+                    if(firebaseCounter.size() == 3){
+                        getLightningMovies();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        // Getting watchlist movies from current user
+        DatabaseReference databaseReferenceWatchlist = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
+        // Getting his movies.
+        databaseReferenceWatchlist.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    String id = d.getKey();
+                    markedMovies.add(id);
+                    firebaseCounter.add(1);
+                    if(firebaseCounter.size() == 3){
+                        getLightningMovies();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
-                // Getting Popular Movies
-                final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                        (Request.Method.GET, urlPopularMovies, null, new Response.Listener<JSONObject>() {
+    /**
+     * [LightningFeature]
+     * Getting the movies that are shown in the Lightning Dialog.
+     * Only show movies that are not in the users list yet.
+     * 1. Get Random movies from the database.
+     * 2. Remove seen movies from those random movies.
+     * 3. Updated dialog UI
+     */
+    private void getLightningMovies() {
+
+        // -2- Generating the URL for the database.
+        final MDBUrls mdbUrls = new MDBUrls();
+        String urlPopularMovies = mdbUrls.generatePopularMoviesUrlWithPage(pageCounter);
+        Log.d(TAG, "getLightningMovies: urlPopularMovies ::: " + urlPopularMovies);
+
+        // Getting Popular Movies
+        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, urlPopularMovies, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String resultPopularMovies = response.toString();
+                        JsonParser jsonParserPopularMovies = new JsonParser(resultPopularMovies);
+                        randomMovies = jsonParserPopularMovies.getList();
+
+                        // Getting Top rated movies
+                        String urlTopRatedMovies = mdbUrls.generateTopRatedMoviesUrlWithPage(pageCounter);
+                        Log.d(TAG, "getLightningMovies: urlTopRatedMovies ::: " + urlTopRatedMovies);
+                        final JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, urlTopRatedMovies, null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                String resultPopularMovies = response.toString();
-                                JsonParser jsonParserPopularMovies = new JsonParser(resultPopularMovies);
-                                randomMovies = jsonParserPopularMovies.getList();
-
-                                // Getting Top rated movies
-                                String urlTopRatedMovies = mdbUrls.generateTopRatedMoviesUrlWithPage(pageCounter);
-                                Log.d(TAG, "getLightningMovies: urlTopRatedMovies ::: " + urlTopRatedMovies);
-                                final JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, urlTopRatedMovies, null, new Response.Listener<JSONObject>() {
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        String resultTopRatedMovies = response.toString();
-                                        JsonParser jsonParserTopRatedMovies = new JsonParser(resultTopRatedMovies);
-                                        ArrayList<Movie> list = jsonParserTopRatedMovies.getList();
-                                        randomMovies.addAll(list);
-                                        Log.d(TAG, "getLightningMovies: getting top rated list done.");
+                                String resultTopRatedMovies = response.toString();
+                                JsonParser jsonParserTopRatedMovies = new JsonParser(resultTopRatedMovies);
+                                ArrayList<Movie> list = jsonParserTopRatedMovies.getList();
+                                randomMovies.addAll(list);
+                                Log.d(TAG, "getLightningMovies: getting top rated list done.");
 
 
-                                        // -3- Removing Seen Movies from random movie list
-                                        for (String seenMovie : seenMovies) {
-                                            for (int i = 0; i < randomMovies.size(); i++) {
-                                                if ((randomMovies.get(i).getId() + "").equals(seenMovie)) {
-                                                    randomMovies.remove(i);
-                                                }
-                                            }
-                                        }
-
-                                        for(Movie movie : randomMovies){
-                                            Log.d(TAG, "full list of random movies ::: " + movie.getTitle());
-                                        }
-
-                                        // If more than 10 Random movies are generated the UI should be uptdated with the first movie
-                                        if(randomMovies.size() > 15){
-                                            // - 4- Update Dialog UI
-                                            updateDialogUI();
-                                        }else{
-                                            // Repeat getting movies with next page
-                                            pageCounter++;
-                                            getLightningMovies();
+                                // -3- Removing Seen Movies from random movie list
+                                for (String seenMovie : markedMovies) {
+                                    for (int i = 0; i < randomMovies.size(); i++) {
+                                        if ((randomMovies.get(i).getId() + "").equals(seenMovie)) {
+                                            randomMovies.remove(i);
                                         }
                                     }
-                                }, new Response.ErrorListener() {
+                                }
 
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                    }
-                                });
-                                // Access the RequestQueue through your singleton class.
-                                MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
+                                for(Movie movie : randomMovies){
+                                    Log.d(TAG, "full list of random movies ::: " + movie.getTitle());
+                                }
+
+                                // If more than 10 Random movies are generated the UI should be uptdated with the first movie
+                                if(randomMovies.size() > 15){
+                                    // - 4- Update Dialog UI
+                                    updateDialogUI();
+                                }else{
+                                    // Repeat getting movies with next page
+                                    pageCounter++;
+                                    getMarkedMovies();
+                                }
                             }
                         }, new Response.ErrorListener() {
 
@@ -269,14 +314,17 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                             public void onErrorResponse(VolleyError error) {
                             }
                         });
-                // Access the RequestQueue through your singleton class.
-                MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
-            }
+                        // Access the RequestQueue through your singleton class.
+                        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
+                    }
+                }, new Response.ErrorListener() {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
     }
 
     /**
@@ -484,14 +532,24 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      */
     private void updateRandomMovies(String direction) {
         // Getting Firebase Database from current user.
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
         if(direction.equals("right")){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
             databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
+        }else if(direction.equals("top")){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
+            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
+        }else if(direction.equals("left")){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
+            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
+        }if(direction.equals("bottom")){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
+            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
+            databaseReference.child(randomMovies.get(0).getId()+"").child("favorite").setValue("true");
         }
         randomMovies.remove(0);
         Log.d(TAG, "updateRandomMovies: swiped ::: " + direction);
         if(randomMovies.size() < 5 ){
-            getLightningMovies();
+            getMarkedMovies();
         }
     }
 }
