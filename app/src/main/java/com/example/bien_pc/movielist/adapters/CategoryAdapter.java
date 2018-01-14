@@ -30,6 +30,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
         public SimpleViewHolder(View view) {
             super(view);
             Context context = itemView.getContext();
+            setIsRecyclable(false);
             title = (TextView) view.findViewById(R.id.category_title);
             horizontalList = (RecyclerView) itemView.findViewById(R.id.rv_horizontal_movies);
             horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));

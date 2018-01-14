@@ -55,6 +55,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public ItemViewHolder(View itemView) {
             super(itemView);
             movieImage = (ImageView) itemView.findViewById(R.id.image_movie);
+            setIsRecyclable(false);
         }
     }
 

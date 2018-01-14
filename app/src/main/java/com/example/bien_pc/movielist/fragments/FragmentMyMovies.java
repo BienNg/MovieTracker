@@ -217,9 +217,6 @@ public class FragmentMyMovies extends Fragment {
      * @param view
      */
     private void updateRecyclerUI(final View view) {
-        // Init. movies of the user
-        ArrayList<Movie> moviesOfUser = new ArrayList<>();
-
         // Init. Firebase Database
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
