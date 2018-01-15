@@ -64,9 +64,7 @@ public class FragmentMyMovies extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
 
-    public FragmentMyMovies() {
-        // Required empty public constructor
-    }
+    public FragmentMyMovies() {}
 
     /**
      * Use this factory method to create a new instance of
@@ -76,7 +74,6 @@ public class FragmentMyMovies extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentMyMovies.
      */
-    // TODO: Rename and change types and number of parameters
     public static FragmentMyMovies newInstance(String param1, String param2) {
         FragmentMyMovies fragment = new FragmentMyMovies();
         Bundle args = new Bundle();

@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -57,7 +58,7 @@ public class MovieActivity extends AppCompatActivity {
     private static ViewPager viewPager;
     private static ViewpagerAdapter viewpagerAdapter;
     private TextView textReleaseYear, textGenres, textDescription, textRating;
-    private ImageView imagePoster, bttnFavorite;
+    private ImageView imagePoster, bttnFavorite, bttnWatch;
     private static ImageButton bttnAdd;
     private static LinearLayout layoutRating;
     private CardView cardViewRelatedMovies;
@@ -103,11 +104,13 @@ public class MovieActivity extends AppCompatActivity {
         layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
         cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
         bttnFavorite = (ImageView) findViewById(R.id.mv_bttn_fav);
+        bttnWatch = (ImageView) findViewById(R.id.mv_bttn_watch);
         bttnAdd = (ImageButton) findViewById(R.id.mv_bttn_add);
 
         // Setting up Buttons
         setUpAddButton();
         setUpFavButton();
+        setUpWatchButton();
 
         // Setting up ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager_movie_images);
@@ -393,5 +396,14 @@ public class MovieActivity extends AppCompatActivity {
             bttnAdd.setVisibility(View.VISIBLE);
             layoutRating.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setUpWatchButton(){
+        bttnWatch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MovieActivity.this, "Watch clicked." , Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

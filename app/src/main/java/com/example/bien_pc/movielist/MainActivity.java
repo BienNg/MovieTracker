@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                     fragmentTransaction.replace(R.id.flContent, fragmentHome, "FragmentName");
                     fragmentTransaction.commit();
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.navigation_my_movies:
                     FragmentMyMovies fragmentMyMovies = new FragmentMyMovies();
                     FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction2.replace(R.id.flContent, fragmentMyMovies, "FragmentName");
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         switch (item.getItemId()) {
             case R.id.menuitem_user:
                 mAuth = FirebaseAuth.getInstance();
-                if (mAuth == null) {
+                if (mAuth.getCurrentUser() == null) {
                     Intent intent = new Intent(this, SignIn.class);
                     startActivity(intent);
                 } else {
@@ -135,9 +136,14 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 return true;
             case R.id.menuitem_lightning:
                 mAuth = FirebaseAuth.getInstance();
-                userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
-                startLightningFeature();
-                getMarkedMovies();
+                if (mAuth.getCurrentUser() != null) {
+                    userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
+                    startLightningFeature();
+                    getMarkedMovies();
+                } else {
+                    Intent intent = new Intent(this, SignIn.class);
+                    startActivity(intent);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -146,14 +152,21 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
     // Shows the pop up window of the user
     private void showPopup() {
-        dialogUserPopup.setContentView(R.layout.popup_user);
+        dialogUserPopup.setContentView(R.layout.dialog_user);
+        Button bttnLogout = (Button) dialogUserPopup.findViewById(R.id.dialog_main_user);
+        bttnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                dialogUserPopup.dismiss();
+            }
+        });
         dialogUserPopup.show();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
     }
-
 
 
     // [Lightning Feature] Variables.
@@ -185,67 +198,105 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      * 1. Gets every movie that is stored in the firebase database of the user.
      * 2. getLightningMovies()
      */
-    private void getMarkedMovies(){
+    private void getMarkedMovies() {
         final ArrayList<Integer> firebaseCounter = new ArrayList<>();
 
-        // -1- Getting seen movies from current user.
-        DatabaseReference databaseReferenceMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-        // Getting his movies.
-        databaseReferenceMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    String id = d.getKey();
-                    markedMovies.add(id);
-                    firebaseCounter.add(1);
-                    if(firebaseCounter.size() == 3){
-                        getLightningMovies();
+                if(dataSnapshot.hasChild(userEmail)){
+                    if(dataSnapshot.child(userEmail).hasChild("movies")){
+                        // -1- Getting seen movies from current user.
+                        final DatabaseReference databaseReferenceMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
+                        // Getting his movies.
+                        databaseReferenceMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                    Log.d(TAG, "Firebase: movies read.");
+                                    String id = d.getKey();
+                                    markedMovies.add(id);
+                                    firebaseCounter.add(1);
+                                    if (firebaseCounter.size() == 3) {
+                                        getLightningMovies();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }else{
+                        firebaseCounter.add(1);
+                        if (firebaseCounter.size() == 3) {
+                            getLightningMovies();
+                        }
+                    }
+                    if(dataSnapshot.child(userEmail).hasChild("swiped")){
+                        // -2- Getting swiped movies from current user
+                        DatabaseReference databaseReferenceSwipedMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
+                        // Getting his movies.
+                        databaseReferenceSwipedMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                    Log.d(TAG, "Firebase: swiped read.");
+                                    String id = d.getKey();
+                                    markedMovies.add(id);
+                                    firebaseCounter.add(1);
+                                    if (firebaseCounter.size() == 3) {
+                                        getLightningMovies();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }else{
+                        firebaseCounter.add(1);
+                        if (firebaseCounter.size() == 3) {
+                            getLightningMovies();
+                        }
+                    }
+                    if(dataSnapshot.child(userEmail).hasChild("watchlist")){
+                        // Getting watchlist movies from current user
+                        DatabaseReference databaseReferenceWatchlist = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
+                        // Getting his movies.
+                        databaseReferenceWatchlist.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                    Log.d(TAG, "Firebase: watchlist read.");
+                                    String id = d.getKey();
+                                    markedMovies.add(id);
+                                    firebaseCounter.add(1);
+                                    if (firebaseCounter.size() == 3) {
+                                        getLightningMovies();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }else{
+                        firebaseCounter.add(1);
+                        if (firebaseCounter.size() == 3) {
+                            getLightningMovies();
+                        }
                     }
                 }
             }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
 
-        // -2- Getting swiped movies from current user
-        DatabaseReference databaseReferenceSwipedMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
-        // Getting his movies.
-        databaseReferenceSwipedMovies.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    String id = d.getKey();
-                    markedMovies.add(id);
-                    firebaseCounter.add(1);
-                    if(firebaseCounter.size() == 3){
-                        getLightningMovies();
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-        // Getting watchlist movies from current user
-        DatabaseReference databaseReferenceWatchlist = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
-        // Getting his movies.
-        databaseReferenceWatchlist.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    String id = d.getKey();
-                    markedMovies.add(id);
-                    firebaseCounter.add(1);
-                    if(firebaseCounter.size() == 3){
-                        getLightningMovies();
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
     }
 
     /**
@@ -285,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                                 Log.d(TAG, "getLightningMovies: getting top rated list done.");
 
 
-                                // -2- Removing Seen Movies from random movie list
+                                // -2- Removing Marked Movies from random movie list
                                 for (String seenMovie : markedMovies) {
                                     for (int i = 0; i < randomMovies.size(); i++) {
                                         if ((randomMovies.get(i).getId() + "").equals(seenMovie)) {
@@ -294,15 +345,15 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                                     }
                                 }
 
-                                for(Movie movie : randomMovies){
+                                for (Movie movie : randomMovies) {
                                     Log.d(TAG, "full list of random movies ::: " + movie.getTitle());
                                 }
 
                                 // If more than 10 Random movies are generated the UI should be uptdated with the first movie
-                                if(randomMovies.size() > 15){
+                                if (randomMovies.size() > 5) {
                                     // -3- Update Dialog UI
                                     updateDialogUI();
-                                }else{
+                                } else {
                                     // Repeat getting movies with next page
                                     pageCounter++;
                                     getMarkedMovies();
@@ -398,6 +449,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      * @param actors
      */
     private void updateRecyclerViewCast(ArrayList<Actor> actors) {
+        Log.d(TAG, "updateRecyclerViewCast: reached");
         RecyclerView rvCast = (RecyclerView) view.findViewById(R.id.dialog_lightning_rv_cast);
         rvCast.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
@@ -409,6 +461,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
     /**
      * Sets Up the feedback after swiping the dialog away.
+     *
      * @param dialog
      */
     private void setUpView(final Dialog dialog) {
@@ -536,32 +589,34 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     /**
      * After Movie is swiped the random Movies list is updated.
      * 1.   - If swiped right: Add movie to Firebase seen list
-     *      - If swiped left: Add movie to Firebase swiped list
-     *      - If swiped top: Add movie to Firebase watch list
-     *      - If swiped bottom: Add movie to Firebase seen list and add fav.
+     * - If swiped left: Add movie to Firebase swiped list
+     * - If swiped top: Add movie to Firebase watch list
+     * - If swiped bottom: Add movie to Firebase seen list and add fav.
      * 2. Remove the swiped movie from the list
      * 3. Check if random movies list has less than 5 movies.
      * - Load more movies if it's less.
      */
     private void updateRandomMovies(String direction) {
         // Getting Firebase Database from current user.
-        if(direction.equals("right")){
+        if (direction.equals("right")) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
-        }else if(direction.equals("top")){
+            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+        } else if (direction.equals("top")) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
-            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
-        }else if(direction.equals("left")){
+            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+        } else if (direction.equals("left")) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
-            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
-        }if(direction.equals("bottom")){
+            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+        }
+        if (direction.equals("bottom")) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-            databaseReference.child(randomMovies.get(0).getId()+"").setValue(randomMovies.get(0).getTitle());
-            databaseReference.child(randomMovies.get(0).getId()+"").child("favorite").setValue("true");
+            Log.d(TAG, "updateRandomMovies: Movie Title ::: " + randomMovies.get(0).getTitle());
+            databaseReference.child(randomMovies.get(0).getId() + "").child("title").setValue(randomMovies.get(0).getTitle());
+            databaseReference.child(randomMovies.get(0).getId() + "").child("favorite").setValue("true");
         }
         randomMovies.remove(0);
         Log.d(TAG, "updateRandomMovies: swiped ::: " + direction);
-        if(randomMovies.size() < 5 ){
+        if (randomMovies.size() < 5) {
             getMarkedMovies();
         }
     }

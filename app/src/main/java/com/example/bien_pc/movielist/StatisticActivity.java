@@ -3,7 +3,6 @@ package com.example.bien_pc.movielist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
@@ -30,7 +29,6 @@ public class StatisticActivity extends AppCompatActivity {
 
     // Views
     private RecyclerView rvGenres;
-    private CardView cardViewTotal;
     TextView txtTotalCounter;
 
     @Override
@@ -41,7 +39,6 @@ public class StatisticActivity extends AppCompatActivity {
 
         // Init. Views
         rvGenres = (RecyclerView) findViewById(R.id.statistics_rv_genres);
-        cardViewTotal = (CardView) findViewById(R.id.statistics_cardview_total);
         txtTotalCounter = (TextView) findViewById(R.id.statistics_txt_total_counter);
 
         ArrayList<String> idOfMovies = intent.getStringArrayListExtra("ID_OF_MOVIES");
