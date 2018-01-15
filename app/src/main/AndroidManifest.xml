@@ -29,7 +29,7 @@
             android:label="Movie"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignIn" />
+        <activity android:name=".SignInActivity" />
         <activity android:name=".SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

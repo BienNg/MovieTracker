@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
             case R.id.menuitem_user:
                 mAuth = FirebaseAuth.getInstance();
                 if (mAuth.getCurrentUser() == null) {
-                    Intent intent = new Intent(this, SignIn.class);
+                    Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
                 } else {
                     showPopup();
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                     startLightningFeature();
                     getMarkedMovies();
                 } else {
-                    Intent intent = new Intent(this, SignIn.class);
+                    Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
                 }
                 return true;

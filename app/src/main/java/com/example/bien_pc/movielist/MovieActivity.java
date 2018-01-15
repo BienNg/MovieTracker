@@ -209,6 +209,9 @@ public class MovieActivity extends AppCompatActivity {
         setupRecyclerViewActors();
     }
 
+    /**
+     * Sets up the Fav button
+     */
     private void setUpFavButton() {
         if (mAuth != null) {
             // Getting reference to the database
@@ -304,7 +307,7 @@ public class MovieActivity extends AppCompatActivity {
                         DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("title");
                         myRef.setValue(title);
                     } else {
-                        Intent intent = new Intent(MovieActivity.context, SignIn.class);
+                        Intent intent = new Intent(MovieActivity.context, SignInActivity.class);
                         startActivity(intent);
                     }
                 } else {
@@ -398,11 +401,15 @@ public class MovieActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up watch now button
+     */
     private void setUpWatchButton(){
         bttnWatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MovieActivity.this, "Watch clicked." , Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onClick: watch now button clicked.");
+                new WatchNow(id).execute();
             }
         });
     }

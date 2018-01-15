@@ -20,10 +20,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignIn extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     // Attributes
-    final private String TAG = "SignIn";
+    final private String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 123;
     private Context context;
     private FirebaseAuth mAuth;
@@ -95,15 +95,15 @@ public class SignIn extends AppCompatActivity {
                                 throw task.getException();
                             } catch(FirebaseAuthWeakPasswordException e) {
                                 Log.d(TAG, "onComplete: FirebaseAuthWeakPasswordException");
-                                Toast.makeText(SignIn.this, "Authentication failed.",
+                                Toast.makeText(SignInActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             } catch(FirebaseAuthInvalidCredentialsException e) {
                                 Log.d(TAG, "onComplete: FirebaseAuthInvalidCredentialsException");
-                                Toast.makeText(SignIn.this, "Authentication failed.",
+                                Toast.makeText(SignInActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             } catch(FirebaseAuthUserCollisionException e) {
                                 Log.d(TAG, "onComplete: FirebaseAuthUserCollisionException");
-                                Toast.makeText(SignIn.this, "Authentication failed.",
+                                Toast.makeText(SignInActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             }catch(FirebaseAuthInvalidUserException e){
                                 Log.d(TAG, "onComplete: FirebaseAuthInvalidUserException");
@@ -130,7 +130,7 @@ public class SignIn extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignIn.this, "Authentication failed.",
+                            Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
 

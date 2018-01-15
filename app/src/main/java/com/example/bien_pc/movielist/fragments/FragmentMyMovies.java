@@ -21,7 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
-import com.example.bien_pc.movielist.SignIn;
+import com.example.bien_pc.movielist.SignInActivity;
 import com.example.bien_pc.movielist.StatisticActivity;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.helper.JsonParser;
@@ -106,7 +106,7 @@ public class FragmentMyMovies extends Fragment {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {
             Log.d(TAG, "onViewCreated: user is null");
-            Intent intent = new Intent(getContext(), SignIn.class);
+            Intent intent = new Intent(getContext(), SignInActivity.class);
             startActivity(intent);
         } else {
             updateRecyclerUI(view);
