@@ -98,8 +98,14 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         fragmentTransaction.replace(R.id.flContent, fragmentHome, "FragmentName");
         fragmentTransaction.commit();
 
-        // Init. Dialog Popup of the user
+        // Init. Variables
         dialogUserPopup = new Dialog(this);
+        mAuth = FirebaseAuth.getInstance();
+
+        // Set watch request listener
+        if (mAuth.getCurrentUser() != null) {
+            setWatchRequestListener();
+        }
     }
 
 
@@ -126,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuitem_user:
-                mAuth = FirebaseAuth.getInstance();
                 if (mAuth.getCurrentUser() == null) {
                     Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
@@ -135,9 +140,8 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 }
                 return true;
             case R.id.menuitem_lightning:
-                mAuth = FirebaseAuth.getInstance();
+                userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
                 if (mAuth.getCurrentUser() != null) {
-                    userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
                     startLightningFeature();
                     getMarkedMovies();
                 } else {
@@ -194,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         dialog.show();
     }
 
-    /**
+    /**[LightningFeature]
      * 1. Gets every movie that is stored in the firebase database of the user.
      * 2. getLightningMovies()
      */
@@ -445,7 +449,6 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
     /**
      * Updates the RecyclerView
-     *
      * @param actors
      */
     private void updateRecyclerViewCast(ArrayList<Actor> actors) {
@@ -461,7 +464,6 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
     /**
      * Sets Up the feedback after swiping the dialog away.
-     *
      * @param dialog
      */
     private void setUpView(final Dialog dialog) {
@@ -619,5 +621,25 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         if (randomMovies.size() < 5) {
             getMarkedMovies();
         }
+    }
+
+    /**
+     * Sends a notification if another user sends a watch request.
+     */
+    private void setWatchRequestListener(){
+        DatabaseReference databaseReferenceWatchRequest = FirebaseDatabase.getInstance().getReference().child(userEmail).child("watch_request");
+        databaseReferenceWatchRequest.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "setWatchRequestListener: activated ::: " + dataSnapshot.getKey() + " - " + dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 }
