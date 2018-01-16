@@ -213,11 +213,11 @@ public class MovieActivity extends AppCompatActivity {
      * Sets up the Fav button
      */
     private void setUpFavButton() {
-        if (mAuth != null) {
             // Getting reference to the database
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             // Check if user is logged in
             final FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
             final String email = currentUser.getEmail().replace(".", "(dot)");
             DatabaseReference databaseReference = database.getReference(email).child("movies");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -271,57 +271,64 @@ public class MovieActivity extends AppCompatActivity {
      * - Clicking on Seen should remove the movie id from the firebase database.
      */
     private void setUpAddButton() {
-        // Getting reference to the database
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         // Check if user is logged in
         final FirebaseUser currentUser = mAuth.getCurrentUser();
-        final String email = currentUser.getEmail().replace(".", "(dot)");
 
-        // Check if user has already seen the movie.
-        // Change icon to seen if yes
-        if (currentUser != null) {
-            DatabaseReference databaseReference = database.getReference(email).child("movies");
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.hasChild(id + "")) {
-                        bttnAdd.setImageResource(R.drawable.ic_seen);
-                        bttnAdd.setTag("seen");
+        if(currentUser != null) {
+            // Getting reference to the database
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            final String email = currentUser.getEmail().replace(".", "(dot)");
+
+            // Check if user has already seen the movie.
+            // Change icon to seen if yes
+            if (currentUser != null) {
+                DatabaseReference databaseReference = database.getReference(email).child("movies");
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.hasChild(id + "")) {
+                            bttnAdd.setImageResource(R.drawable.ic_seen);
+                            bttnAdd.setTag("seen");
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+
+            bttnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: " + bttnAdd.getTag());
+                    if (bttnAdd.getTag().equals("add")) {
+                        if (currentUser != null) {
+                            bttnAdd.setImageResource(R.drawable.ic_seen);
+                            bttnAdd.setTag("seen");
+                            // Add a id to the database
+                            DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("title");
+                            myRef.setValue(title);
+                        } else {
+                            Intent intent = new Intent(MovieActivity.context, SignInActivity.class);
+                            startActivity(intent);
+                        }
+                    } else {
+                        bttnAdd.setImageResource(R.drawable.ic_add);
+                        bttnAdd.setTag("add");
+                        bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
+                        bttnFavorite.setTag("not_fav");
+                        // Delete id
+                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "");
+                        myRef.setValue(null);
+
+                    }
                 }
             });
+        }else{
+            Intent intent = new Intent(MovieActivity.this, SignInActivity.class);
+            startActivity(intent);
         }
-
-        bttnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: " + bttnAdd.getTag());
-                if (bttnAdd.getTag().equals("add")) {
-                    if (currentUser != null) {
-                        bttnAdd.setImageResource(R.drawable.ic_seen);
-                        bttnAdd.setTag("seen");
-                        // Add a id to the database
-                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("title");
-                        myRef.setValue(title);
-                    } else {
-                        Intent intent = new Intent(MovieActivity.context, SignInActivity.class);
-                        startActivity(intent);
-                    }
-                } else {
-                    bttnAdd.setImageResource(R.drawable.ic_add);
-                    bttnAdd.setTag("add");
-                    bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
-                    bttnFavorite.setTag("not_fav");
-                    // Delete id
-                    DatabaseReference myRef = database.getReference(email).child("movies").child(id + "");
-                    myRef.setValue(null);
-
-                }
-            }
-        });
     }
 
     /**
