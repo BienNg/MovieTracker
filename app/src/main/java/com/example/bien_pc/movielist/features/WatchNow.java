@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist;
+package com.example.bien_pc.movielist.features;
 
 import android.util.Log;
 
@@ -11,6 +11,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 /**
+ * This class executes the Watch-Now-Feature.
+ * By clicking on the watch now button of a movie, every user who has the same movie
+ * on his watchlist will be notified and gets a request to start a chat conversation.
  * Created by bien on 15.01.2018.
  */
 
@@ -26,6 +29,7 @@ public class WatchNow {
     }
 
     public void execute(){
+        Log.d(TAG, "execute: watch now executed");
         user = FirebaseAuth.getInstance().getCurrentUser();
         final String email = user.getEmail().replace(".", "(dot)");
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();

@@ -1,9 +1,11 @@
-package com.example.bien_pc.movielist;
+package com.example.bien_pc.movielist.activities;
 
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.example.bien_pc.movielist.R;
 
 public class SearchActivity extends AppCompatActivity {
 

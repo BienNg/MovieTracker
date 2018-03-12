@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.bien_pc.movielist.SearchActivity">
+    tools:context="com.example.bien_pc.movielist.activities.SearchActivity">
 
 </android.support.constraint.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist;
+package com.example.bien_pc.movielist.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,12 +16,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.R;
+import com.example.bien_pc.movielist.features.WatchNow;
 import com.example.bien_pc.movielist.adapters.ActorsAdapter;
 import com.example.bien_pc.movielist.adapters.MoviesAdapter;
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;

@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist;
+package com.example.bien_pc.movielist.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.adapters.AdapterStatisticsGenre;
 import com.example.bien_pc.movielist.helper.JsonParser;
 import com.example.bien_pc.movielist.helper.MDBUrls;

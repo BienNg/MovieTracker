@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.bien_pc.movielist.ActorActivity;
+import com.example.bien_pc.movielist.activities.ActorActivity;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.models.Actor;
 import com.squareup.picasso.Callback;

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.example.bien_pc.movielist.MainActivity">
+    tools:context="com.example.bien_pc.movielist.activities.MainActivity">
 
     <!-- The main content view where fragments are loaded -->
     <FrameLayout

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background_dark_grey"
-    tools:context="com.example.bien_pc.movielist.StatisticActivity">
+    tools:context="com.example.bien_pc.movielist.activities.StatisticActivity">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
