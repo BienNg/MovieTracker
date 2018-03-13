@@ -17,7 +17,7 @@ public class MyFirebaseUser {
 
     public MyFirebaseUser(){
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth != null){
+        if (mAuth.getCurrentUser() != null){
             username = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
             database = FirebaseDatabase.getInstance();
             firebaseUser = mAuth.getCurrentUser();

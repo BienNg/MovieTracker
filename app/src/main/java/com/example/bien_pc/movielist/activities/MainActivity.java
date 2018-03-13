@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         myFirebasUser = new MyFirebaseUser();
 
         // Set watch request listener
-        if (myFirebasUser.getAuth() != null) {
+        if (myFirebasUser.getAuth().getCurrentUser() != null) {
             setWatchRequestListener();
         }
     }
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuitem_user:
-                if (myFirebasUser.getAuth() == null) {
+                if (myFirebasUser.getAuth().getCurrentUser() == null) {
                     Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
                 } else {
@@ -601,10 +601,21 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                     .child("title")
                     .setValue(randomMovies.get(0).getTitle());
         } else if (direction.equals("top")) {
+            // Adding the movie to the watchlist of the user
             myFirebasUser.getWatchedReference()
                     .child(randomMovies.get(0).getId() + "")
                     .child("title")
                     .setValue(randomMovies.get(0).getTitle());
+
+            // Putting the user on the watch_request list with the movie
+            DatabaseReference databaseWatchrequestsRef = FirebaseDatabase
+                    .getInstance()
+                    .getReference()
+                    .child("watch_requests")
+                    .child(randomMovies.get(0).getId()+"")
+                    .child(myFirebasUser.getUsername());
+            // TODO Change to the gender of the user
+            databaseWatchrequestsRef.setValue("male");
         } else if (direction.equals("left")) {
             myFirebasUser.getSwipedMoviesReference()
                     .child(randomMovies.get(0).getId() + "")
