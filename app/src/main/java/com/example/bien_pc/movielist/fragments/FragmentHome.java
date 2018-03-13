@@ -22,6 +22,7 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
+import com.example.bien_pc.movielist.models.MyFirebaseUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +46,7 @@ public class FragmentHome extends Fragment {
     private CategoryAdapter adapter;
     private HashMap<String, ArrayList<Movie>> listOfMovies;
     private ArrayList<Category> categoriesWithContent;
+    private MyFirebaseUser myFirebaseUser;
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -162,9 +164,12 @@ public class FragmentHome extends Fragment {
         MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
 
         // Getting watchlist Movies
-        if(FirebaseAuth.getInstance().getCurrentUser() != null && requestObject.equals("Watchlist")){
-            String email = FirebaseAuth.getInstance().getCurrentUser().getEmail().replace(".", "(dot)");
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(email).child("watchlist");
+        myFirebaseUser = new MyFirebaseUser();
+        if(myFirebaseUser.getAuth().getCurrentUser() != null && requestObject.equals("Watchlist")){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                            .getReference()
+                            .child(myFirebaseUser.getUsername())
+                            .child("watchlist");
             final ArrayList<String> watchlistIDs = new ArrayList<>();
 
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {

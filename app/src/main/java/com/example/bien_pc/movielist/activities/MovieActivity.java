@@ -31,6 +31,7 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
+import com.example.bien_pc.movielist.models.MyFirebaseUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,7 +54,7 @@ public class MovieActivity extends AppCompatActivity {
     private static Context context;
     private int id;
     private static String title;
-    private FirebaseAuth mAuth;
+    private MyFirebaseUser myFirebaseUser;
 
     //Views
     private static ViewPager viewPager;
@@ -72,8 +73,6 @@ public class MovieActivity extends AppCompatActivity {
 
 
     /**
-     * Getting the movie id
-     *
      * @param savedInstanceState
      */
     @Override
@@ -86,9 +85,9 @@ public class MovieActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Getting Firabase Instance
-        mAuth = FirebaseAuth.getInstance();
+        myFirebaseUser = new MyFirebaseUser();
 
-        // Getting the movie id and title
+        // Getting the movie
         id = getIntent().getIntExtra("ID", 0);
 
         activity = this;
@@ -121,6 +120,9 @@ public class MovieActivity extends AppCompatActivity {
         getMovieInformationForUi();
     }
 
+    /**
+     * Gets the movie information to update the ui
+     */
     private void getMovieInformationForUi() {
         MDBUrls mdbUrls = new MDBUrls();
         String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
@@ -214,13 +216,8 @@ public class MovieActivity extends AppCompatActivity {
      * Sets up the Fav button
      */
     private void setUpFavButton() {
-            // Getting reference to the database
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            // Check if user is logged in
-            final FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            final String email = currentUser.getEmail().replace(".", "(dot)");
-            DatabaseReference databaseReference = database.getReference(email).child("movies");
+        if (myFirebaseUser.getFirebaseUser() != null) {
+            DatabaseReference databaseReference = myFirebaseUser.getDatabase().getReference(myFirebaseUser.getUsername()).child("movies");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -242,20 +239,23 @@ public class MovieActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if(bttnFavorite.getTag().equals("not_seen")){
+                        // Update UI
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_full);
                         bttnFavorite.setTag("seen");
                         bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
-                        // Add a id to the database
-                        DatabaseReference myRefTitle = database.getReference(email).child("movies").child(id + "").child("title");
-                        myRefTitle.setValue(title);
-                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("favorite");
-                        myRef.setValue("true");
+
+                        myFirebaseUser.addMovie(id, title);
+
                     }else{
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
                         bttnFavorite.setTag("not_seen");
                         // Delete fav
-                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("favorite");
+                        DatabaseReference myRef = myFirebaseUser.getDatabase()
+                                .getReference(myFirebaseUser.getUsername())
+                                .child("movies")
+                                .child(id + "")
+                                .child("favorite");
                         myRef.setValue(null);
                     }
                 }
@@ -273,17 +273,13 @@ public class MovieActivity extends AppCompatActivity {
      */
     private void setUpAddButton() {
         // Check if user is logged in
-        final FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser != null) {
-            // Getting reference to the database
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            final String email = currentUser.getEmail().replace(".", "(dot)");
-
+        if(myFirebaseUser.getFirebaseUser() != null) {
             // Check if user has already seen the movie.
             // Change icon to seen if yes
-            if (currentUser != null) {
-                DatabaseReference databaseReference = database.getReference(email).child("movies");
+                DatabaseReference databaseReference = myFirebaseUser.getDatabase()
+                        .getReference(myFirebaseUser.getUsername())
+                        .child("movies");
+
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -297,18 +293,21 @@ public class MovieActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
-            }
 
             bttnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "onClick: " + bttnAdd.getTag());
                     if (bttnAdd.getTag().equals("add")) {
-                        if (currentUser != null) {
+                        if (myFirebaseUser.getFirebaseUser() != null) {
                             bttnAdd.setImageResource(R.drawable.ic_seen);
                             bttnAdd.setTag("seen");
                             // Add a id to the database
-                            DatabaseReference myRef = database.getReference(email).child("movies").child(id + "").child("title");
+                            DatabaseReference myRef = myFirebaseUser.getDatabase()
+                                    .getReference(myFirebaseUser.getUsername())
+                                    .child("movies")
+                                    .child(id + "")
+                                    .child("title");
                             myRef.setValue(title);
                         } else {
                             Intent intent = new Intent(MovieActivity.context, SignInActivity.class);
@@ -320,7 +319,10 @@ public class MovieActivity extends AppCompatActivity {
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
                         bttnFavorite.setTag("not_fav");
                         // Delete id
-                        DatabaseReference myRef = database.getReference(email).child("movies").child(id + "");
+                        DatabaseReference myRef = myFirebaseUser.getDatabase()
+                                .getReference(myFirebaseUser.getUsername())
+                                .child("movies")
+                                .child(id + "");
                         myRef.setValue(null);
 
                     }

@@ -24,13 +24,13 @@ import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.activities.SignInActivity;
 import com.example.bien_pc.movielist.activities.StatisticActivity;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
+import com.example.bien_pc.movielist.models.MyFirebaseUser;
 import com.example.bien_pc.movielist.helper.JsonParser;
 import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,6 +57,7 @@ public class FragmentMyMovies extends Fragment {
     private final ArrayList<String> idOfMovies = new ArrayList<>();
     private final ArrayList<String> favMovies = new ArrayList<>();
     private CategoryAdapter adapter;
+    private MyFirebaseUser mFirebaseUser;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -103,8 +104,9 @@ public class FragmentMyMovies extends Fragment {
 
         // Check if user exists
         // Start sign activity if not
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() == null) {
+        mFirebaseUser = new MyFirebaseUser();
+        //FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (mFirebaseUser.getAuth().getCurrentUser() == null) {
             Log.d(TAG, "onViewCreated: user is null");
             Intent intent = new Intent(getContext(), SignInActivity.class);
             startActivity(intent);
@@ -217,7 +219,7 @@ public class FragmentMyMovies extends Fragment {
         // Init. Firebase Database
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        com.google.firebase.auth.FirebaseUser currentUser = mAuth.getCurrentUser();
         String email = currentUser.getEmail().replace(".", "(dot)");
 
         // Getting list of seen movies from firebase
