@@ -36,7 +36,7 @@ import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.helper.OnSwipeTouchListener;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.bien_pc.movielist.models.MyFirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     // Popup Dialog of the user
     private Dialog dialogUserPopup;
     // Firebase user
-    private FirebaseAuth mAuth;
-    private String userEmail;
+    private MyFirebaseUser myFirebasUser;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -101,11 +100,10 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
 
         // Init. Variables
         dialogUserPopup = new Dialog(this);
-        mAuth = FirebaseAuth.getInstance();
+        myFirebasUser = new MyFirebaseUser();
 
         // Set watch request listener
-        if (mAuth.getCurrentUser() != null) {
-            userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
+        if (myFirebasUser.getAuth() != null) {
             setWatchRequestListener();
         }
     }
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuitem_user:
-                if (mAuth.getCurrentUser() == null) {
+                if (myFirebasUser.getAuth() == null) {
                     Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
                 } else {
@@ -142,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                 }
                 return true;
             case R.id.menuitem_lightning:
-                userEmail = mAuth.getCurrentUser().getEmail().replace(".", "(dot)");
-                if (mAuth.getCurrentUser() != null) {
+                if (myFirebasUser.getAuth() != null) {
                     startLightningFeature();
                     getMarkedMovies();
                 } else {
@@ -163,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
         bttnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAuth.signOut();
+                myFirebasUser.getAuth().signOut();
                 dialogUserPopup.dismiss();
             }
         });
@@ -207,16 +204,15 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     private void getMarkedMovies() {
         final ArrayList<Integer> firebaseCounter = new ArrayList<>();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("user");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(userEmail)){
-                    if(dataSnapshot.child(userEmail).hasChild("movies")){
+                if(dataSnapshot.hasChild(myFirebasUser.getUsername())){
+                    if(dataSnapshot.child(myFirebasUser.getUsername()).hasChild("movies")){
                         // -1- Getting seen movies from current user.
-                        final DatabaseReference databaseReferenceMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
                         // Getting his movies.
-                        databaseReferenceMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+                        myFirebasUser.getAllMoviesReference().addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot d : dataSnapshot.getChildren()) {
@@ -240,15 +236,13 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                             getLightningMovies();
                         }
                     }
-                    if(dataSnapshot.child(userEmail).hasChild("swiped")){
+                    if(dataSnapshot.child(myFirebasUser.getUsername()).hasChild("swiped")){
                         // -2- Getting swiped movies from current user
-                        DatabaseReference databaseReferenceSwipedMovies = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
                         // Getting his movies.
-                        databaseReferenceSwipedMovies.addListenerForSingleValueEvent(new ValueEventListener() {
+                        myFirebasUser.getSwipedMoviesReference().addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                    Log.d(TAG, "Firebase: swiped read.");
                                     String id = d.getKey();
                                     markedMovies.add(id);
                                     firebaseCounter.add(1);
@@ -268,11 +262,10 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                             getLightningMovies();
                         }
                     }
-                    if(dataSnapshot.child(userEmail).hasChild("watchlist")){
+                    if(dataSnapshot.child(myFirebasUser.getUsername()).hasChild("watchlist")){
                         // Getting watchlist movies from current user
-                        DatabaseReference databaseReferenceWatchlist = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
                         // Getting his movies.
-                        databaseReferenceWatchlist.addListenerForSingleValueEvent(new ValueEventListener() {
+                        myFirebasUser.getWatchedReference().addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot d : dataSnapshot.getChildren()) {
@@ -603,20 +596,24 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     private void updateRandomMovies(String direction) {
         // Getting Firebase Database from current user.
         if (direction.equals("right")) {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+            myFirebasUser.getAllMoviesReference()
+                    .child(randomMovies.get(0).getId() + "")
+                    .child("title")
+                    .setValue(randomMovies.get(0).getTitle());
         } else if (direction.equals("top")) {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("watchlist");
-            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+            myFirebasUser.getWatchedReference()
+                    .child(randomMovies.get(0).getId() + "")
+                    .child("title")
+                    .setValue(randomMovies.get(0).getTitle());
         } else if (direction.equals("left")) {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("swiped");
-            databaseReference.child(randomMovies.get(0).getId() + "").setValue(randomMovies.get(0).getTitle());
+            myFirebasUser.getSwipedMoviesReference()
+                    .child(randomMovies.get(0).getId() + "")
+                    .child("title")
+                    .setValue(randomMovies.get(0).getTitle());
         }
         if (direction.equals("bottom")) {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(userEmail).child("movies");
-            Log.d(TAG, "updateRandomMovies: Movie Title ::: " + randomMovies.get(0).getTitle());
-            databaseReference.child(randomMovies.get(0).getId() + "").child("title").setValue(randomMovies.get(0).getTitle());
-            databaseReference.child(randomMovies.get(0).getId() + "").child("favorite").setValue("true");
+            myFirebasUser.getAllMoviesReference().child(randomMovies.get(0).getId() + "").child("title").setValue(randomMovies.get(0).getTitle());
+            myFirebasUser.getAllMoviesReference().child(randomMovies.get(0).getId() + "").child("favorite").setValue("true");
         }
         randomMovies.remove(0);
         Log.d(TAG, "updateRandomMovies: swiped ::: " + direction);
@@ -629,11 +626,15 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      * Sends a notification if another user sends a watch request.
      */
     private void setWatchRequestListener(){
-        DatabaseReference databaseReferenceWatchRequest = FirebaseDatabase.getInstance().getReference().child(userEmail).child("watch_request");
+        DatabaseReference databaseReferenceWatchRequest = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("user")
+                .child(myFirebasUser.getUsername())
+                .child("watch_request");
         databaseReferenceWatchRequest.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "setWatchRequestListener: activated ::: " + dataSnapshot.getKey() + " - " + dataSnapshot.getValue());
             }
 
             @Override

@@ -269,7 +269,7 @@ public class MovieActivity extends AppCompatActivity {
     private void setUpAddButton() {
         // Check if user is logged in
         if(myFirebaseUser.getFirebaseUser() != null) {
-            
+
                 // Update UI
                 myFirebaseUser.getAllMoviesReference().addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

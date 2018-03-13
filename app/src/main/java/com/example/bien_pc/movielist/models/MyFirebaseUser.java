@@ -127,4 +127,22 @@ public class MyFirebaseUser {
                 .child(username)
                 .child("movies");
     }
+
+    /**
+     * Returns the databasereference to swiped movies.
+     * @return
+     */
+    public DatabaseReference getSwipedMoviesReference(){
+        return database
+                .getReference("user")
+                .child(username)
+                .child("swiped");
+    }
+
+    public DatabaseReference getWatchedReference(){
+        return database
+                .getReference("user")
+                .child(username)
+                .child("watchlist");
+    }
 }
