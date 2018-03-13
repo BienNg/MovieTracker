@@ -50,11 +50,39 @@ public class MyFirebaseUser {
         this.firebaseUser = firebaseUser;
     }
 
+
     /**
      * Adds the movie with the @param id to the database of the user.
      * @param id
      */
-    public void addMovie(int id, String title){
+    public void addMovieToSeen(int id, String title){
+        DatabaseReference databaseTitleRef = database
+                .getReference("user")
+                .child(username)
+                .child("movies")
+                .child(id+"")
+                .child("title");
+        databaseTitleRef.setValue(title);
+    }
+
+    /**
+     * Removes movie from seen database with the given id
+     * @param id
+     */
+    public void removeMovieFromSeen(int id){
+        DatabaseReference databaseMovieRef = database.
+                getReference("user")
+                .child(username)
+                .child("movies")
+                .child(id+"");
+        databaseMovieRef.setValue(null);
+    }
+
+    /**
+     * Sets the favorite attribute to true
+     * @param id
+     */
+    public void favMovie(int id, String title){
 
         // Adding the movie and setting the title
         DatabaseReference databaseTitleRef = database
@@ -73,5 +101,30 @@ public class MyFirebaseUser {
                 .child(id+"")
                 .child("favorite");
         databaseFavRef.setValue("true");
+    }
+
+    /**
+     * Unfavs movie from the databse
+     * @param id
+     */
+    public void unfavMovie(int id){
+        DatabaseReference databaseFavRef = database
+                .getReference("user")
+                .child(username)
+                .child("movies")
+                .child(id+"")
+                .child("favorite");
+        databaseFavRef.setValue(null);
+    }
+
+    /**
+     * Returns the databasereference to all movies of the user.
+     * @return
+     */
+    public DatabaseReference getAllMoviesReference(){
+        return database
+                .getReference("user")
+                .child(username)
+                .child("movies");
     }
 }

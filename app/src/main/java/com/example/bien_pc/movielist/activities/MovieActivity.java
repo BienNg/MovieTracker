@@ -32,12 +32,9 @@ import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
 import com.example.bien_pc.movielist.models.MyFirebaseUser;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -217,11 +214,14 @@ public class MovieActivity extends AppCompatActivity {
      */
     private void setUpFavButton() {
         if (myFirebaseUser.getFirebaseUser() != null) {
-            DatabaseReference databaseReference = myFirebaseUser.getDatabase().getReference(myFirebaseUser.getUsername()).child("movies");
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            // Updating UI
+            myFirebaseUser.getAllMoviesReference()
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.hasChild(id + "") && snapshot.child(id+"").hasChild("favorite") && snapshot.child(id+"").child("favorite").getValue().equals("true")) {
+                    if (snapshot.hasChild(id + "")
+                            && snapshot.child(id+"").hasChild("favorite")
+                            && snapshot.child(id+"").child("favorite").getValue().equals("true")) {
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_full);
                         bttnFavorite.setTag("is_fav");
                     }else{
@@ -229,12 +229,12 @@ public class MovieActivity extends AppCompatActivity {
                         bttnFavorite.setTag("not_fav");
                     }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
 
+            // Setup listener for the favButton
             bttnFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -245,18 +245,13 @@ public class MovieActivity extends AppCompatActivity {
                         bttnAdd.setImageResource(R.drawable.ic_seen);
                         bttnAdd.setTag("seen");
 
-                        myFirebaseUser.addMovie(id, title);
+                        myFirebaseUser.favMovie(id, title);
 
                     }else{
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
                         bttnFavorite.setTag("not_seen");
                         // Delete fav
-                        DatabaseReference myRef = myFirebaseUser.getDatabase()
-                                .getReference(myFirebaseUser.getUsername())
-                                .child("movies")
-                                .child(id + "")
-                                .child("favorite");
-                        myRef.setValue(null);
+                        myFirebaseUser.unfavMovie(id);
                     }
                 }
             });
@@ -274,13 +269,9 @@ public class MovieActivity extends AppCompatActivity {
     private void setUpAddButton() {
         // Check if user is logged in
         if(myFirebaseUser.getFirebaseUser() != null) {
-            // Check if user has already seen the movie.
-            // Change icon to seen if yes
-                DatabaseReference databaseReference = myFirebaseUser.getDatabase()
-                        .getReference(myFirebaseUser.getUsername())
-                        .child("movies");
-
-                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            
+                // Update UI
+                myFirebaseUser.getAllMoviesReference().addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.hasChild(id + "")) {
@@ -288,28 +279,29 @@ public class MovieActivity extends AppCompatActivity {
                             bttnAdd.setTag("seen");
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
 
+            // Bttn adds movie or removes movie from database when clicked
             bttnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "onClick: " + bttnAdd.getTag());
+                    Log.d(TAG, "onClick: Add Button is clicked.");
+
                     if (bttnAdd.getTag().equals("add")) {
                         if (myFirebaseUser.getFirebaseUser() != null) {
+
+                            // Update UI
                             bttnAdd.setImageResource(R.drawable.ic_seen);
                             bttnAdd.setTag("seen");
+
                             // Add a id to the database
-                            DatabaseReference myRef = myFirebaseUser.getDatabase()
-                                    .getReference(myFirebaseUser.getUsername())
-                                    .child("movies")
-                                    .child(id + "")
-                                    .child("title");
-                            myRef.setValue(title);
-                        } else {
+                            myFirebaseUser.addMovieToSeen(id, title);
+
+                        }else {
+                            // If usre is not logged in, SignIn Activity is called.
                             Intent intent = new Intent(MovieActivity.context, SignInActivity.class);
                             startActivity(intent);
                         }
@@ -318,12 +310,9 @@ public class MovieActivity extends AppCompatActivity {
                         bttnAdd.setTag("add");
                         bttnFavorite.setImageResource(R.drawable.ic_favorite_empty);
                         bttnFavorite.setTag("not_fav");
-                        // Delete id
-                        DatabaseReference myRef = myFirebaseUser.getDatabase()
-                                .getReference(myFirebaseUser.getUsername())
-                                .child("movies")
-                                .child(id + "");
-                        myRef.setValue(null);
+
+                        // Delete id from database
+                        myFirebaseUser.removeMovieFromSeen(id);
 
                     }
                 }
