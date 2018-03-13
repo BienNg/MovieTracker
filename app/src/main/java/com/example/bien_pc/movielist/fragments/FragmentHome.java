@@ -166,13 +166,9 @@ public class FragmentHome extends Fragment {
         // Getting watchlist Movies
         myFirebaseUser = new MyFirebaseUser();
         if(myFirebaseUser.getAuth().getCurrentUser() != null && requestObject.equals("Watchlist")){
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                            .getReference()
-                            .child(myFirebaseUser.getUsername())
-                            .child("watchlist");
             final ArrayList<String> watchlistIDs = new ArrayList<>();
 
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            myFirebaseUser.getWatchedReference().addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for( DataSnapshot d : dataSnapshot.getChildren()){
@@ -219,9 +215,10 @@ public class FragmentHome extends Fragment {
         listOfMovies.put("Drama Movies", dramaMovies);
         listOfMovies.put("Horror Movies", horrorMovies);
 
+
         if (watchlistMovies != null) {
-            Log.d(TAG, "getCategories: watchlistMovies size ::: " + watchlistMovies.size());
             categoriesWithContent.add(new Category("Watchlist", watchlistMovies));
+            Log.d(TAG, "getCategories: watchlist added.");
         }
 
         if (popularMovies != null) {

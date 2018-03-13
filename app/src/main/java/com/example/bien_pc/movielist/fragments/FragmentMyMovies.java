@@ -105,7 +105,6 @@ public class FragmentMyMovies extends Fragment {
         // Check if user exists
         // Start sign activity if not
         mFirebaseUser = new MyFirebaseUser();
-        //FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (mFirebaseUser.getAuth().getCurrentUser() == null) {
             Log.d(TAG, "onViewCreated: user is null");
             Intent intent = new Intent(getContext(), SignInActivity.class);
@@ -144,6 +143,7 @@ public class FragmentMyMovies extends Fragment {
 
         // Filling the categories with movies
         for (Movie movie : mySeenMovies){
+            Log.d(TAG, "setUpRecyclerView: seen movie ::: " + movie.getTitle());
             for(String genre : movie.getGenres()){
                 if(!mapCategories.containsKey(genre)){
                     ArrayList<Movie> list = new ArrayList<>();
@@ -216,15 +216,8 @@ public class FragmentMyMovies extends Fragment {
      * @param view
      */
     private void updateRecyclerUI(final View view) {
-        // Init. Firebase Database
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        com.google.firebase.auth.FirebaseUser currentUser = mAuth.getCurrentUser();
-        String email = currentUser.getEmail().replace(".", "(dot)");
-
         // Getting list of seen movies from firebase
-        DatabaseReference databaseReference = database.getReference(email).child("movies");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        mFirebaseUser.getAllMoviesReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
