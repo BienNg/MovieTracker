@@ -46,6 +46,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -131,7 +132,9 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // Shows the user information
             case R.id.menuitem_user:
+                // Start signin activity if user is not logged in
                 if (myFirebasUser.getAuth().getCurrentUser() == null) {
                     Intent intent = new Intent(this, SignInActivity.class);
                     startActivity(intent);
@@ -139,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
                     showPopup();
                 }
                 return true;
+
+            // Starts the lightning feature
             case R.id.menuitem_lightning:
                 if (myFirebasUser.getAuth() != null) {
                     startLightningFeature();
@@ -157,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     private void showPopup() {
         dialogUserPopup.setContentView(R.layout.dialog_user);
         Button bttnLogout = (Button) dialogUserPopup.findViewById(R.id.dialog_main_user);
+        TextView txtvEmail = (TextView) dialogUserPopup.findViewById(R.id.dialog_txt_email);
+        txtvEmail.setText(myFirebasUser.getUsername());
         bttnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

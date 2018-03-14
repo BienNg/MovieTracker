@@ -2,6 +2,7 @@ package com.example.bien_pc.movielist.features;
 
 import android.util.Log;
 
+import com.example.bien_pc.movielist.models.MyFirebaseUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 public class WatchNow {
 
     // Variables
-    private FirebaseUser user;
+    private MyFirebaseUser mMyFirebaseUser;
     private final String TAG = "WatchNow.class";
     private int movieId;
 
@@ -30,17 +31,19 @@ public class WatchNow {
 
     public void execute(){
         Log.d(TAG, "execute: watch now executed");
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        final String email = user.getEmail().replace(".", "(dot)");
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        mMyFirebaseUser = new MyFirebaseUser();
+        DatabaseReference databaseWatchRequestRef = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("watch_requests");
+
+        databaseWatchRequestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot d : dataSnapshot.getChildren()){
                     Log.d(TAG, "onDataChange: user in database ::: " + d.getKey());
-                    if(!d.getKey().equals(email)){
-                        boolean onUsersWatchlist = d.child("watchlist").hasChild(movieId+"");
-                        Log.d(TAG, "onDataChange: user has movie on watchlist ::: " + onUsersWatchlist);
+                    if(d.getKey().equals(movieId+"")){
+                        Log.d(TAG, "onDataChange ::: " + movieId + " is aleady in the watch request list.");
                     }
                 }
             }
