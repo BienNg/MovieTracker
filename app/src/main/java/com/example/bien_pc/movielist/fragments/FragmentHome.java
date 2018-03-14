@@ -22,12 +22,9 @@ import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.MyFirebaseUser;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.bien_pc.movielist.helper.MyFirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;

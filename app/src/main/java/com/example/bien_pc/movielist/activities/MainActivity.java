@@ -36,7 +36,7 @@ import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.helper.OnSwipeTouchListener;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
-import com.example.bien_pc.movielist.models.MyFirebaseUser;
+import com.example.bien_pc.movielist.helper.MyFirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,7 +46,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 

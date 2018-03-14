@@ -1,4 +1,4 @@
-package com.example.bien_pc.movielist.models;
+package com.example.bien_pc.movielist.helper;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

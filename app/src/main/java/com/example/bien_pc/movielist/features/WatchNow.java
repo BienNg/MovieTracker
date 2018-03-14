@@ -2,9 +2,8 @@ package com.example.bien_pc.movielist.features;
 
 import android.util.Log;
 
-import com.example.bien_pc.movielist.models.MyFirebaseUser;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.bien_pc.movielist.helper.MyFirebaseUser;
+import com.example.bien_pc.movielist.helper.MyFirebaseWatchRequester;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,14 +43,15 @@ public class WatchNow {
                     Log.d(TAG, "onDataChange: user in database ::: " + d.getKey());
                     if(d.getKey().equals(movieId+"")){
                         Log.d(TAG, "onDataChange ::: " + movieId + " is aleady in the watch request list.");
+                        MyFirebaseWatchRequester firebaseWatchRequester = new MyFirebaseWatchRequester(movieId);
+
+                        break;
                     }
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 }

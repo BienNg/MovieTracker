@@ -24,17 +24,14 @@ import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.activities.SignInActivity;
 import com.example.bien_pc.movielist.activities.StatisticActivity;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
-import com.example.bien_pc.movielist.models.MyFirebaseUser;
+import com.example.bien_pc.movielist.helper.MyFirebaseUser;
 import com.example.bien_pc.movielist.helper.JsonParser;
 import com.example.bien_pc.movielist.helper.MDBUrls;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
