@@ -44,6 +44,7 @@ public class WatchNow {
                     if(d.getKey().equals(movieId+"")){
                         Log.d(TAG, "onDataChange ::: " + movieId + " is aleady in the watch request list.");
                         MyFirebaseWatchRequester firebaseWatchRequester = new MyFirebaseWatchRequester(movieId);
+                        firebaseWatchRequester.execute();
 
                         break;
                     }
