@@ -145,4 +145,11 @@ public class MyFirebaseUser {
                 .child(username)
                 .child("watchlist");
     }
+
+    public DatabaseReference getWatchlistReference(){
+        return database.
+                getReference("user")
+                .child(username)
+                .child("watchlist");
+    }
 }

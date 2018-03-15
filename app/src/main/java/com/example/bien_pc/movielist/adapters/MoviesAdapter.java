@@ -8,10 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.bien_pc.movielist.activities.MovieActivity;
 import com.example.bien_pc.movielist.R;
+import com.example.bien_pc.movielist.helper.MyFirebaseUser;
 import com.example.bien_pc.movielist.models.Movie;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -48,13 +54,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         mRowIndex = index;
     }
 
+    /**
+     * (ONLY) INIT. Views of the the items in the RecyclerView
+     */
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView movieImage;
+        private TextView txtvBadgeNotification;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
+            // Init. Views
             movieImage = (ImageView) itemView.findViewById(R.id.image_movie);
+            txtvBadgeNotification = (TextView) itemView.findViewById(R.id.txtv_movie_badge);
             setIsRecyclable(false);
         }
     }
@@ -69,7 +81,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
     /**
-     * Declares the behaviour appearance of the items.
+     * Setting up the behaviour and appearance of the items.
      * @param rawHolder
      * @param position
      */
@@ -77,8 +89,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, final int position) {
         final ItemViewHolder holder = (ItemViewHolder) rawHolder;
 
+        //Setting up the ImageView from URL
         if(mDataList.get(position).getPosterPath() != null){
-            //Setting the image from URL
             Picasso.with(context).load(mDataList.get(position).getPosterPath()).into(holder.movieImage, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -88,14 +100,38 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 @Override
                 public void onError() {
                     Log.d(TAG, "onError: ");
-
                 }
             });
         }else{
             holder.movieImage.setImageDrawable(null);
         }
 
-        //Setting click listener for the movie item
+        // Setting up badge notificytion of the movie
+        MyFirebaseUser myFirebaseUser = new MyFirebaseUser();
+        DatabaseReference databaseReference = myFirebaseUser.getWatchlistReference().child(mDataList.get(position).getId()+"");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild("watch_requests")){
+                    int counterWatchRequests = 0;
+                    for(DataSnapshot s : dataSnapshot.child("watch_requests").getChildren()){
+                        counterWatchRequests++;
+                        Log.d(TAG, "onDataChange: user " + s.getKey() + " requests to watch the movie.");
+                        Log.d(TAG, "onDataChange: Watch Counter ::: " + counterWatchRequests);
+                    }
+                    holder.txtvBadgeNotification.setText(counterWatchRequests+"");
+                    holder.txtvBadgeNotification.setVisibility(View.VISIBLE);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // Setting click listener for the movie item
         holder.movieImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
