@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
+import com.example.bien_pc.movielist.adapters.RvAdapterWatchRequests;
 import com.example.bien_pc.movielist.features.WatchNow;
 import com.example.bien_pc.movielist.adapters.ActorsAdapter;
 import com.example.bien_pc.movielist.adapters.MoviesAdapter;
@@ -34,6 +35,7 @@ import com.example.bien_pc.movielist.models.Movie;
 import com.example.bien_pc.movielist.helper.MyFirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -64,8 +66,10 @@ public class MovieActivity extends AppCompatActivity {
     // Variables for the collection RecyclerViews
     private static MoviesAdapter adapterRelatedMovies;
     private static ActorsAdapter adapterActors;
-    private static RecyclerView rvRelatedMovies, rvCast;
+    private static RvAdapterWatchRequests adapterWatchRequests;
+    private static RecyclerView rvRelatedMovies, rvCast, rvWatchRequests;
     private ArrayList<Actor> listActors = new ArrayList<>();
+    private ArrayList<String> listWatchRequests = new ArrayList<>();
 
 
     /**
@@ -97,6 +101,7 @@ public class MovieActivity extends AppCompatActivity {
         imagePoster = (ImageView) findViewById(R.id.mv_image_poster);
         rvRelatedMovies = (RecyclerView) findViewById(R.id.mv_rv_related_movies);
         rvCast = (RecyclerView) findViewById(R.id.mv_rv_cast);
+        rvWatchRequests = (RecyclerView) findViewById(R.id.mv_rv_watch_requests);
         layoutRating = (LinearLayout) findViewById(R.id.mv_layout_rating);
         cardViewRelatedMovies = (CardView) findViewById(R.id.mv_cardview_related_movies);
         bttnFavorite = (ImageView) findViewById(R.id.mv_bttn_fav);
@@ -113,13 +118,14 @@ public class MovieActivity extends AppCompatActivity {
         viewpagerAdapter = new ViewpagerAdapter(this, id);
         viewPager.setAdapter(viewpagerAdapter);
 
-        getMovieInformationForUi();
+        setupRecyclerViewWatchRequests();
+        setUpMovieInformationForUi();
     }
 
     /**
      * Gets the movie information to update the ui
      */
-    private void getMovieInformationForUi() {
+    private void setUpMovieInformationForUi() {
         MDBUrls mdbUrls = new MDBUrls();
         String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -410,5 +416,61 @@ public class MovieActivity extends AppCompatActivity {
                 new WatchNow(id).execute();
             }
         });
+    }
+
+    /**
+     * Setting up RecyclerView for WatchRequests
+     */
+    private void setupRecyclerViewWatchRequests(){
+
+        Log.d(TAG, "setupRecyclerViewWatchRequests: reached");
+
+        DatabaseReference databaseWatchListReference = myFirebaseUser.getWatchlistReference();
+        databaseWatchListReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Checking if this movie is in the watchlist of the user && user has requests from other users
+                if(dataSnapshot.hasChild(id+"") && dataSnapshot.child(id+"").hasChild("watch_requests")){
+
+                    Log.d(TAG, "onDataChange 1: reached");
+                    DatabaseReference databaseWatchRequestsRef = myFirebaseUser
+                            .getWatchRequestReference(id);
+                    databaseWatchRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot d : dataSnapshot.getChildren()){
+                                listWatchRequests.add(d.getKey());
+                            }
+                            fillRvWatchRequest();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void fillRvWatchRequest(){
+        Log.d(TAG, "fillRvWatchRequest: reached");
+
+        for(String s : listWatchRequests){
+            Log.d(TAG, "listWatchRequests ::: " + s);
+        }
+
+        rvWatchRequests.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        rvWatchRequests.setLayoutManager(linearLayoutManager);
+        adapterWatchRequests = new RvAdapterWatchRequests(context, listWatchRequests);
+        rvWatchRequests.setAdapter(adapterWatchRequests);
+        rvWatchRequests.setVisibility(View.VISIBLE);
     }
 }

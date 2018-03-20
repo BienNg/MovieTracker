@@ -152,4 +152,13 @@ public class MyFirebaseUser {
                 .child(username)
                 .child("watchlist");
     }
+
+    public DatabaseReference getWatchRequestReference(int movieId){
+        return database
+                .getReference("user")
+                .child(username)
+                .child("watchlist")
+                .child(movieId+"")
+                .child("watch_requests");
+    }
 }

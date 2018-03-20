@@ -54,6 +54,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Simple
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, final int position) {
         holder.title.setText(mData.get(position).getTitle());
+        // If category is watchlist, the notification badge should be set
+        if(mData.get(position).getTitle().equals("Watchlist")){
+            holder.moviesAdapter.setInWatchlist(true);
+        }
         holder.moviesAdapter.setData(mData.get(position).getMovies()); // List of Strings
         holder.moviesAdapter.setRowIndex(position);
     }

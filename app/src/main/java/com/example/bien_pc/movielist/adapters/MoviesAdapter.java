@@ -36,6 +36,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Context context;
     private List<Movie> mDataList = new ArrayList<>();
     private int mRowIndex = -1;
+    private boolean inWatchlist = false;
 
     public MoviesAdapter(Context context) {
         this.context = context;
@@ -46,6 +47,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         mDataList = movies;
     }
 
+    public void setInWatchlist(boolean b){
+        inWatchlist = b;
+    }
     public void setData(List<Movie> data) {
         mDataList = data;
     }
@@ -55,7 +59,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     /**
-     * (ONLY) INIT. Views of the the items in the RecyclerView
+     * (only) INIT. Views of the the items in the RecyclerView
      */
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -106,30 +110,32 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.movieImage.setImageDrawable(null);
         }
 
-        // Setting up badge notificytion of the movie
-        MyFirebaseUser myFirebaseUser = new MyFirebaseUser();
-        DatabaseReference databaseReference = myFirebaseUser.getWatchlistReference().child(mDataList.get(position).getId()+"");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild("watch_requests")){
-                    int counterWatchRequests = 0;
-                    for(DataSnapshot s : dataSnapshot.child("watch_requests").getChildren()){
-                        counterWatchRequests++;
-                        Log.d(TAG, "onDataChange: user " + s.getKey() + " requests to watch the movie.");
-                        Log.d(TAG, "onDataChange: Watch Counter ::: " + counterWatchRequests);
+        // Setting up badge notificytion of the movie if movie is in watchlist
+        if(inWatchlist){
+            MyFirebaseUser myFirebaseUser = new MyFirebaseUser();
+            DatabaseReference databaseReference = myFirebaseUser.getWatchlistReference().child(mDataList.get(position).getId()+"");
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.hasChild("watch_requests")){
+                        int counterWatchRequests = 0;
+                        for(DataSnapshot s : dataSnapshot.child("watch_requests").getChildren()){
+                            counterWatchRequests++;
+                            Log.d(TAG, "onDataChange: user " + s.getKey() + " requests to watch the movie.");
+                            Log.d(TAG, "onDataChange: Watch Counter ::: " + counterWatchRequests);
+                        }
+                        holder.txtvBadgeNotification.setText(counterWatchRequests+"");
+                        holder.txtvBadgeNotification.setVisibility(View.VISIBLE);
+
                     }
-                    holder.txtvBadgeNotification.setText(counterWatchRequests+"");
-                    holder.txtvBadgeNotification.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }
 
         // Setting click listener for the movie item
         holder.movieImage.setOnClickListener(new View.OnClickListener() {

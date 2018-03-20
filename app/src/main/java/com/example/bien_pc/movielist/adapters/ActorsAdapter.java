@@ -32,10 +32,6 @@ public class ActorsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<Actor> mDataList = new ArrayList<>();
     private int mRowIndex = -1;
 
-    public ActorsAdapter(Context context) {
-        this.context = context;
-    }
-
     public ActorsAdapter(Context context, ArrayList<Actor> actors) {
         this.context = context;
         mDataList = actors;
