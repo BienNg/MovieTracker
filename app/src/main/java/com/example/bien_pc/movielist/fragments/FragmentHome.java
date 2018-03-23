@@ -18,7 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.adapters.CategoryAdapter;
 import com.example.bien_pc.movielist.helper.JsonParser;
-import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.TMDBHelper;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Category;
 import com.example.bien_pc.movielist.models.Movie;
@@ -122,7 +122,7 @@ public class FragmentHome extends Fragment {
     private void getMovies(final View view, final String requestObject) {
         Log.d(TAG, "getMovies: reached.");
         // Generating the HTTP URL
-        final String url = new MDBUrls(requestObject).getUrl();
+        final String url = new TMDBHelper(requestObject).getUrl();
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -174,7 +174,7 @@ public class FragmentHome extends Fragment {
 
                     watchlistMovies = new ArrayList<>();
                     for(String id : watchlistIDs){
-                        final String urlMovie = new MDBUrls().generateMovieDetailsUrl(Integer.parseInt(id));
+                        final String urlMovie = new TMDBHelper().generateMovieDetailsUrl(Integer.parseInt(id));
                         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlMovie, null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {

@@ -41,9 +41,8 @@ public class JsonParser {
     }
 
     /**
-     * This method reads the jsonString and returns the movie titles the
-     * wanted list e.g. popular movies, horror movies etc.
-     *
+     * This method reads a json that holds movies and returns an arraylist with the equivalent
+     * movie objects.     *
      * @return
      */
     public ArrayList<Movie> getList() {
@@ -218,6 +217,10 @@ public class JsonParser {
         return null;
     }
 
+    /**
+     * Gets credits of an actor.
+     * @return
+     */
     public ArrayList<Movie> getActorCredits(){
         ArrayList<Movie> credits = new ArrayList<>();
 

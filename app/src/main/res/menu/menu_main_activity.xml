@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menuitem_search"
+        android:icon="@drawable/ic_search"
+        android:title="search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"></item>
+    <item
         android:id="@+id/menuitem_lightning"
         android:title="lightning"
         android:icon="@drawable/ic_view_carousel"
@@ -10,6 +16,5 @@
         android:id="@+id/menuitem_user"
         android:icon="@drawable/ic_user_image_with_black_background"
         android:title="User"
-        app:showAsAction="always"
-        ></item>
+        app:showAsAction="always"></item>
 </menu>

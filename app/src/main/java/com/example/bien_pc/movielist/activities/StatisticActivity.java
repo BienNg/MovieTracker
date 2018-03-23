@@ -14,7 +14,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.adapters.AdapterStatisticsGenre;
 import com.example.bien_pc.movielist.helper.JsonParser;
-import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.TMDBHelper;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Movie;
 
@@ -56,7 +56,7 @@ public class StatisticActivity extends AppCompatActivity {
 
         // Getting the movie objects by their id.
         for (String id : idOfMovies) {
-            MDBUrls mdbUrls = new MDBUrls();
+            TMDBHelper mdbUrls = new TMDBHelper();
             final String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
             final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                     (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {

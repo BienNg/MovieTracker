@@ -16,7 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.bien_pc.movielist.R;
 import com.example.bien_pc.movielist.adapters.MoviesAdapter;
 import com.example.bien_pc.movielist.helper.JsonParser;
-import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.TMDBHelper;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
@@ -68,7 +68,7 @@ public class ActorActivity extends AppCompatActivity {
      * Gets the id of the actor and returns an actor object.
      */
     private void getActorsBasicInfo(){
-        MDBUrls mdbUrls = new MDBUrls();
+        TMDBHelper mdbUrls = new TMDBHelper();
         final String actorUrl = mdbUrls.generateActorInfoUrl(id);
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, actorUrl, null, new Response.Listener<JSONObject>() {
@@ -99,7 +99,7 @@ public class ActorActivity extends AppCompatActivity {
     }
 
     private void getActorsMovieCredits(){
-        MDBUrls mdbUrls = new MDBUrls();
+        TMDBHelper mdbUrls = new TMDBHelper();
         final String actorUrl = mdbUrls.generateActorsCredits(id);
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, actorUrl, null, new Response.Listener<JSONObject>() {

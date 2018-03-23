@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -31,7 +33,7 @@ import com.example.bien_pc.movielist.adapters.ActorsAdapter;
 import com.example.bien_pc.movielist.fragments.FragmentHome;
 import com.example.bien_pc.movielist.fragments.FragmentMyMovies;
 import com.example.bien_pc.movielist.helper.JsonParser;
-import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.TMDBHelper;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.helper.OnSwipeTouchListener;
 import com.example.bien_pc.movielist.models.Actor;
@@ -117,8 +119,32 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main_activity, menu);
+
+        // Setup SearchView
+        MenuItem searchItem = menu.findItem(R.id.menuitem_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("QUERY", query);
+                startActivity(intent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        /*
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        ComponentName componentName = new ComponentName(this, SearchActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+        */
+
         return true;
     }
 
@@ -319,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
     private void getLightningMovies() {
 
         // -1- Generating the URL for the database.
-        final MDBUrls mdbUrls = new MDBUrls();
+        final TMDBHelper mdbUrls = new TMDBHelper();
         String urlPopularMovies = mdbUrls.generatePopularMoviesUrlWithPage(pageCounter);
         Log.d(TAG, "getLightningMovies: urlPopularMovies ::: " + urlPopularMovies);
 
@@ -423,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
             }
         });
 
-        MDBUrls mdbUrls = new MDBUrls();
+        TMDBHelper mdbUrls = new TMDBHelper();
         String urlCast = mdbUrls.generateCastListUrl(randomMovie.getId());
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, urlCast, null, new Response.Listener<JSONObject>() {

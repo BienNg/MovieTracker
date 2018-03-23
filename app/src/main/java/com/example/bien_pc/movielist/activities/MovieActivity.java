@@ -28,7 +28,7 @@ import com.example.bien_pc.movielist.adapters.ActorsAdapter;
 import com.example.bien_pc.movielist.adapters.MoviesAdapter;
 import com.example.bien_pc.movielist.adapters.ViewpagerAdapter;
 import com.example.bien_pc.movielist.helper.JsonParser;
-import com.example.bien_pc.movielist.helper.MDBUrls;
+import com.example.bien_pc.movielist.helper.TMDBHelper;
 import com.example.bien_pc.movielist.helper.MySingleton;
 import com.example.bien_pc.movielist.models.Actor;
 import com.example.bien_pc.movielist.models.Movie;
@@ -126,7 +126,7 @@ public class MovieActivity extends AppCompatActivity {
      * Gets the movie information to update the ui
      */
     private void setUpMovieInformationForUi() {
-        MDBUrls mdbUrls = new MDBUrls();
+        TMDBHelper mdbUrls = new TMDBHelper();
         String movieUrl = mdbUrls.getURL() + "/movie/" + id + mdbUrls.getAPI_KEY();
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, movieUrl, null, new Response.Listener<JSONObject>() {
@@ -204,7 +204,7 @@ public class MovieActivity extends AppCompatActivity {
         // Setting up the related movies recycler view
         if (movie.getCollectionId() != 0) {
             cardViewRelatedMovies.setVisibility(View.VISIBLE);
-            MDBUrls controller = new MDBUrls();
+            TMDBHelper controller = new TMDBHelper();
             controller.getCollection(movie.getId(), movie.getCollectionId());
         } else {
             cardViewRelatedMovies.setVisibility(View.GONE);
@@ -351,7 +351,7 @@ public class MovieActivity extends AppCompatActivity {
      */
     private void setupRecyclerViewActors() {
         // Getting URL of the actors
-        MDBUrls mdbUrls = new MDBUrls();
+        TMDBHelper mdbUrls = new TMDBHelper();
         String actorsUrl = mdbUrls.generateCastListUrl(id);
         Log.d(TAG, "setupRecyclerViewActors: actorsUrl ::: " + actorsUrl);
         // Getting list of actors

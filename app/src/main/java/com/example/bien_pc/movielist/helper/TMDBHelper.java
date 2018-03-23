@@ -20,10 +20,10 @@ import java.util.ArrayList;
  * Created by Bien-PC on 04.01.2018.
  */
 
-public class MDBUrls {
+public class TMDBHelper {
     private final String URL = "https://api.themoviedb.org/3";
     private final String API_KEY = "?api_key=c9fa182d1bdc69a05cdaf873e0216d82";
-    private final String TAG = "MDBUrls";
+    private final String TAG = "TMDBHelper";
     private String requestObject;
     private Context mContext;
 
@@ -31,7 +31,7 @@ public class MDBUrls {
      * Constructor for requests.
      * @param requestObject
      */
-    public MDBUrls(String requestObject) {
+    public TMDBHelper(String requestObject) {
         this.requestObject = requestObject;
     }
 
@@ -39,14 +39,14 @@ public class MDBUrls {
     /**
      * Standard Constructor.
      */
-    public MDBUrls(Context context){
+    public TMDBHelper(Context context){
         this.mContext = context;
     }
 
     /**
      * Empty Constructor
      */
-    public MDBUrls(){}
+    public TMDBHelper(){}
 
     /**
      * Returns the correct URL according to the request Object
@@ -150,6 +150,9 @@ public class MDBUrls {
         return URL + "/movie/" + id + API_KEY;
     }
 
+    public String generateMovieSearchUrl(String query){
+        return URL + "/search/movie" + API_KEY + "&query="+query;
+    }
     public String getURL() {
         return URL;
     }
