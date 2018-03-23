@@ -160,7 +160,7 @@ public class FragmentMyMovies extends Fragment {
 
         // Adding every genre to the RecyclerView that has more than 9 movies
         for(String genre : mapCategories.keySet()){
-            if(mapCategories.get(genre).size() > 0 && !genre.equals("Favorites")){
+            if(mapCategories.get(genre).size() > 5 && !genre.equals("Favorites")){
                 categoriesWithContent.add(new Category(genre, sortByYear(mapCategories.get(genre))));
             }
         }

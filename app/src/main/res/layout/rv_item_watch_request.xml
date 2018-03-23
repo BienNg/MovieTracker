@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/rvItem_watchRequest_image_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_user_image_with_black_background"/>
 
     <TextView
-        android:id="@+id/txtv_rv_item_watch_request"
+        android:id="@+id/rvItem_watchRequest_userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="4dp"
+        android:textColor="@color/text_color1"
         android:text="name"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

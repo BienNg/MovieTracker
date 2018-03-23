@@ -167,7 +167,11 @@ public class MainActivity extends AppCompatActivity implements FragmentHome.OnFr
             @Override
             public void onClick(View v) {
                 myFirebasUser.getAuth().signOut();
+                myFirebasUser = null;
                 dialogUserPopup.dismiss();
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             }
         });
         dialogUserPopup.show();

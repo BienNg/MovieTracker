@@ -469,7 +469,7 @@ public class MovieActivity extends AppCompatActivity {
         rvWatchRequests.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvWatchRequests.setLayoutManager(linearLayoutManager);
-        adapterWatchRequests = new RvAdapterWatchRequests(context, listWatchRequests);
+        adapterWatchRequests = new RvAdapterWatchRequests(context, listWatchRequests, id);
         rvWatchRequests.setAdapter(adapterWatchRequests);
         rvWatchRequests.setVisibility(View.VISIBLE);
     }
