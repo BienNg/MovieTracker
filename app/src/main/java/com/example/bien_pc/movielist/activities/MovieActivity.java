@@ -462,10 +462,6 @@ public class MovieActivity extends AppCompatActivity {
     private void fillRvWatchRequest(){
         Log.d(TAG, "fillRvWatchRequest: reached");
 
-        for(String s : listWatchRequests){
-            Log.d(TAG, "listWatchRequests ::: " + s);
-        }
-
         rvWatchRequests.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rvWatchRequests.setLayoutManager(linearLayoutManager);

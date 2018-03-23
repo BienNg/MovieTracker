@@ -7,15 +7,36 @@
     android:layout_height="match_parent"
     tools:context="com.example.bien_pc.movielist.activities.ChatActivity">
 
+    <TextView
+        android:id="@+id/ac_chat_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="movie"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ac_chat_introduction"
+        android:layout_above="@id/ac_chat_linear_layout">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/act_chat_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/ac_chat_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/ac_chat_edittxt_send"
+            android:id="@+id/act_chat_edittxt_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

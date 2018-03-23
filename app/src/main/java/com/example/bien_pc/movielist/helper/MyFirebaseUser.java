@@ -162,7 +162,7 @@ public class MyFirebaseUser {
                 .child("watch_requests");
     }
 
-    public DatabaseReference getChatsReference(){
+    public DatabaseReference getAllChatsReference(){
         return database
                 .getReference("chats");
     }
@@ -233,5 +233,21 @@ public class MyFirebaseUser {
 
         messageId.child("sender").setValue(username);
         messageId.child("message").setValue(message);
+    }
+
+    public DatabaseReference getChatByIdRef(String partner1, String partner2, int movieId){
+        String[] chatPartners = new String[2];
+
+        // Sort chatpartner IDs alphabetically
+        if(partner1.compareTo(partner2) < 0){
+            chatPartners[0] = partner1;
+            chatPartners[1] = partner2;
+        }else{
+            chatPartners[0] = partner2;
+            chatPartners[1] = partner1;
+        }
+        return database.getReference("chats")
+                .child(chatPartners[0] + chatPartners[1] + movieId)
+                .child("chat");
     }
 }
